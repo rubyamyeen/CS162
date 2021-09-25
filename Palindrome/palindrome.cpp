@@ -1,0 +1,41 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main() {
+  //variables
+  bool isPalindrome = false;
+  char str[80];
+  char reverse[80];
+  char punctuation[] = {' ', ',', '.', '-', '?', '!', ':', ';'};
+  
+  //prompts the user
+  cout << "Enter a phrase/word to check if it's a palindrome" << endl;
+  cin.get(str, 80, '\n');
+  cin.get();
+  
+  //remove punctuation
+  for (int i = 0; i < strlen(punctuation); i++) {
+      remove(begin(str), end(str), punctuation[i]);
+    }
+  //lower case
+  for (int i = 0; i < strlen(str); i++) {
+    str[i] = tolower(str[i]);
+  }
+  
+  int index = 0;
+  //reverse string
+  for (int i = strlen(str) - 1; i >= 0; i--) {
+    if (str[i] != '\0') {
+  	reverse[index] = str[i];
+	index++;
+    }
+  }
+  
+  //compare strings and check if palindrome
+  if (strcmp(str, reverse) == 0) {
+    cout <<  "Palindrome." << endl;
+  } else {
+    cout << "Not a palindrome." << endl;
+  }
+}
