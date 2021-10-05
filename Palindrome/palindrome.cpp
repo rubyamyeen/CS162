@@ -14,6 +14,7 @@ int main() {
   cout << "Enter a phrase/word to check if it's a palindrome" << endl;
   cin.get(str, 80, '\n');
   cin.get();
+  //cout << str << endl;
   
   //remove punctuation
   for (int i = 0; i < strlen(punctuation); i++) {
@@ -23,6 +24,7 @@ int main() {
   for (int i = 0; i < strlen(str); i++) {
     str[i] = tolower(str[i]);
   }
+  //cout << str << endl;
   
   int index = 0;
   //reverse string
@@ -32,9 +34,10 @@ int main() {
 	index++;
     }
   }
+  //cout << reverse << endl;
   
   //compare strings and check if palindrome
-  if (strcmp(str, reverse) == 0) {
+  if (strncmp(str, reverse, strlen(str)) == 0) {
     cout <<  "Palindrome." << endl;
   } else {
     cout << "Not a palindrome." << endl;
