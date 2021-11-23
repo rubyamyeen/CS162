@@ -1,0 +1,22 @@
+#include <iostream>
+#include <cstring>
+#include <math.h>
+using namespace std;
+
+int main() {
+  int numbers[8];
+  cout << sizeof(numbers) << endl;
+  for (int i = 0; i < 8; i++) {
+    cout << "Enter a number:" << endl;
+    cin >> numbers[i];
+  }
+  int total;
+  for (int i = 0; i < sizeof(numbers); i++) {
+    if (numbers[i]%7 != 0) {
+      total *= numbers[i];
+    }
+  }
+  cout << total << endl;
+  
+  return 0;
+}

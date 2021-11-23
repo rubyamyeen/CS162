@@ -34,10 +34,11 @@ int main() {
 	index++;
     }
   }
+  reverse[index] = '\0';
   //cout << reverse << endl;
   
   //compare strings and check if palindrome
-  if (strncmp(str, reverse, strlen(str)) == 0) {
+  if (strcmp(str, reverse) == 0) {
     cout <<  "Palindrome." << endl;
   } else {
     cout << "Not a palindrome." << endl;
