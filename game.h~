@@ -1,0 +1,25 @@
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+class Game {
+  char* title;
+  int year;
+  char* publisher;
+  double rating;
+  
+ public:
+  //constructor
+  Game(char* newTitle, int newYear, double newRating, char* newPublisher);
+  
+  //destructor
+  //~Game();
+  
+  //get methods
+  char* getTitle();
+  int getYear();
+  char* getPublisher();
+  double getRating();
+  
+};

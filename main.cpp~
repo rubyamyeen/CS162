@@ -1,0 +1,17 @@
+#include <iostream>
+#include <cstring>
+#include "game.h"
+using namespace std;
+
+int main() {
+  char* title = new char[100];
+  strcpy(title, "Super Smash Bros");
+  char* publisher = new char[100];
+  strcpy(publisher, "Nintendo");
+  Game ssb(title, 2019, publisher, 5.0);
+  cout << ssb.getYear() << endl;
+  cout << ssb.getRating() << endl;
+  cout << ssb.getTitle() << endl;
+  cout << ssb.getPublisher() << endl;
+  
+}
