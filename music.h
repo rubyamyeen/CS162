@@ -1,9 +1,13 @@
+#ifndef MUSIC_H
+#define MUSIC_H
+
 #include <iostream>
 #include <cstring>
+#include "media.h"
 
 using namespace std;
 
-class Music {
+class Music: public Media {
   char title[80];
   char artist[80];
   int year;
@@ -19,10 +23,12 @@ class Music {
   //~Music();
   
   //get methods
-  char* getTitle();
+  //char* getTitle();
   char* getArtist();
-  int getYear();
+  //int getYear();
   int getDuration();
   char* getPublisher();
   
 };
+
+#endif

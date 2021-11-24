@@ -1,12 +1,16 @@
+#ifndef MOVIE_H
+#define MOVIE_H
+
 #include <iostream>
 #include <cstring>
+#include "media.h"
 
 using namespace std;
 
-class Movie {
-  char title[80];
+class Movie: public Media {
+  //char title[80];
   char director[80];
-  int year;
+  //int year;
   int duration;
   int rating;
   
@@ -19,10 +23,12 @@ class Movie {
   //~Movie();
   
   //get methods
-  char* getTitle();
+  //char* getTitle();
   char* getDirector();
-  int getYear();
+  //int getYear();
   int getDuration();
   int getRating();
   
 };
+
+#endif

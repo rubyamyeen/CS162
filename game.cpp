@@ -5,9 +5,9 @@
 using namespace std;
 
 //constructor
-Game::Game(char* newTitle, int newYear, char* newPublisher,  double newRating){
-  strcpy(title, newTitle);
-  year = newYear;
+Game::Game(char* newTitle, int newYear, char* newPublisher,  double newRating): Media(newTitle, newYear){
+  //strcpy(title, newTitle);
+  //year = newYear;
   strcpy(publisher, newPublisher);
   rating = newRating;
 }
@@ -16,6 +16,7 @@ Game::Game(char* newTitle, int newYear, char* newPublisher,  double newRating){
 //Game::~Game();
   
 //get methods
+/*
 char* Game::getTitle() {
   return title;
 }
@@ -23,6 +24,7 @@ char* Game::getTitle() {
 int Game::getYear() {
   return year;
 }
+*/
 
 char* Game::getPublisher() {
   return publisher;

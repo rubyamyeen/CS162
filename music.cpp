@@ -5,10 +5,10 @@
 using namespace std;
 
 //constructor
-Music::Music(char* newTitle, char* newArtist, int newYear, int newDuration, char* newPublisher){
-  strcpy(title, newTitle);
+Music::Music(char* newTitle, char* newArtist, int newYear, int newDuration, char* newPublisher): Media(newTitle, newYear){
+  //strcpy(title, newTitle);
   strcpy(artist, newArtist);
-  year = newYear;
+  //year = newYear;
   duration = newDuration;
   strcpy(publisher, newPublisher);
 }
@@ -17,17 +17,21 @@ Music::Music(char* newTitle, char* newArtist, int newYear, int newDuration, char
 //Music::~Music();
   
 //get methods
+/*
 char* Music::getTitle() {
   return title;
 }
+*/
 
 char* Music::getArtist() {
   return artist;
 }
 
+/*
 int Music::getYear() {
   return year;
 }
+*/
 
 int Music::getDuration() {
   return duration;

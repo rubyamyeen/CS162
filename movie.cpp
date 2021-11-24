@@ -5,10 +5,10 @@
 using namespace std;
 
 //constructor
-Movie::Movie(char* newTitle, char* newDirector, int newYear, int newDuration, int newRating){
-  strcpy(title, newTitle);
+Movie::Movie(char* newTitle, char* newDirector, int newYear, int newDuration, int newRating): Media(newTitle, newYear){
+  //strcpy(title, newTitle);
   strcpy(director, newDirector);
-  year = newYear;
+  //year = newYear;
   duration = newDuration;
   rating = newRating;
 }
@@ -17,17 +17,21 @@ Movie::Movie(char* newTitle, char* newDirector, int newYear, int newDuration, in
 //Movie::~Movie();
   
 //get methods
+/*
 char* Movie::getTitle() {
   return title;
 }
+*/
 
 char* Movie::getDirector() {
   return director;
 }
 
+/*
 int Movie::getYear() {
   return year;
 }
+*/
 
 int Movie::getDuration() {
   return duration;
