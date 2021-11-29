@@ -1,3 +1,5 @@
+//blueprint for game
+
 #ifndef GAME_H
 #define GAME_H
 
@@ -8,23 +10,17 @@
 using namespace std;
 
 class Game: public Media{
-  //char title[80];
-  // int year;
   char publisher[80];
-  double rating;
+  int rating;
   
  public:
   //constructor
-  Game(char* newTitle, int newYear, char* newPublisher, double newRating);
-  
+  Game(char* newTitle, int newYear, char* newPublisher, int newRating);
+
   //destructor
-  //~Game();
+  ~Game();
   
-  //get methods
-  //char* getTitle();
-  //int getYear();
-  char* getPublisher();
-  double getRating();
+  void display();
   
 };
 

@@ -1,3 +1,5 @@
+//blueprint of the parent class
+
 #ifndef MEDIA_H
 #define MEDIA_H
 
@@ -14,12 +16,15 @@ public:
   //constructor
   Media(char* newTitle, int newYear);
 
-  //destructor
-  //~Media();
+  //virtual function
+  virtual void display() = 0;
 
   //get methods
   char* getTitle();
   int getYear();
+
+  //destructor
+  virtual ~Media();
   
 };
 

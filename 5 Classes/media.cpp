@@ -1,3 +1,5 @@
+//defines the parent class functions
+
 #include <iostream>
 #include <cstring>
 #include "media.h"
@@ -10,13 +12,15 @@ Media::Media(char* newTitle, int newYear) {
   year = newYear;
 }
 
-//destructor
-//Media::~Media();
-
 //get methods
 char* Media::getTitle() {
   return title;
 }
 int Media::getYear() {
   return year;
+}
+
+//destructor
+Media::~Media() {
+  
 }

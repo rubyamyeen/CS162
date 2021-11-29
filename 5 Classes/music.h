@@ -1,3 +1,5 @@
+//blueprint for music
+
 #ifndef MUSIC_H
 #define MUSIC_H
 
@@ -8,9 +10,7 @@
 using namespace std;
 
 class Music: public Media {
-  char title[80];
   char artist[80];
-  int year;
   int duration;
   char publisher[80];
   
@@ -20,14 +20,9 @@ class Music: public Media {
   
   
   //destructor
-  //~Music();
-  
-  //get methods
-  //char* getTitle();
-  char* getArtist();
-  //int getYear();
-  int getDuration();
-  char* getPublisher();
+  ~Music();
+
+  void display();
   
 };
 

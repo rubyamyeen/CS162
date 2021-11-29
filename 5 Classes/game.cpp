@@ -1,3 +1,5 @@
+//defines game functions
+
 #include <iostream>
 #include <cstring>
 #include "game.h"
@@ -5,31 +7,21 @@
 using namespace std;
 
 //constructor
-Game::Game(char* newTitle, int newYear, char* newPublisher,  double newRating): Media(newTitle, newYear){
-  //strcpy(title, newTitle);
-  //year = newYear;
+Game::Game(char* newTitle, int newYear, char* newPublisher, int newRating): Media(newTitle, newYear){
   strcpy(publisher, newPublisher);
   rating = newRating;
 }
 
 //destructor
-//Game::~Game();
-  
-//get methods
-/*
-char* Game::getTitle() {
-  return title;
+Game::~Game() {
+   cout << "in the game destructor" << endl;
 }
 
-int Game::getYear() {
-  return year;
-}
-*/
 
-char* Game::getPublisher() {
-  return publisher;
-}
-
-double Game::getRating() {
-  return rating;
+//display method
+void Game::display() {
+  cout << title << endl;
+  cout << year << endl;
+  cout << publisher << endl;
+  cout << rating << endl;
 }
