@@ -222,7 +222,7 @@ void deleteMedia(vector<Media*> &mediaList) {
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     cin.get(title, 80);
     cin.get();
-    for (int i = 0; i < mediaList.size(); i++) {
+    for (int i = mediaList.size() - 1; i >= 0; i--) {
       if (strcmp(title, mediaList[i]->getTitle()) == 0) {
         temp = mediaList[i];
 	delete temp;
@@ -233,7 +233,7 @@ void deleteMedia(vector<Media*> &mediaList) {
     int year;
     cout << "Enter the year: ";
     cin >> year;
-    for (int i = 0; i < mediaList.size(); i++) {
+    for (int i = mediaList.size() - 1; i >= 0; i--) {
       if (mediaList[i]->getYear() == year) {
         temp = mediaList[i];
 	delete temp;
@@ -242,5 +242,3 @@ void deleteMedia(vector<Media*> &mediaList) {
     }
   }
 }
-
-
