@@ -7,6 +7,7 @@ Date: 11/28/21
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <limits>
 
 #include "media.h"
 #include "game.h"
