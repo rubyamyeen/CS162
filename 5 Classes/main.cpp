@@ -34,7 +34,6 @@ int main() {
     //add
     if (strcmp(input, "ADD") == 0) {
       addMedia(mediaList);
-      cout << "Media added!" << endl;
       
     //search
     } else if (strcmp(input, "SEARCH") == 0) {
@@ -43,7 +42,6 @@ int main() {
     //delete
     } else if (strcmp(input, "DELETE") == 0) {
       deleteMedia(mediaList);
-      cout << "Media deleted!" << endl;
       
     //quit
     } else if (strcmp(input, "QUIT") == 0) {
@@ -95,6 +93,7 @@ void addMedia(vector<Media*> &mediaList) {
 
     Game* gamePtr = new Game(gameTitle, gameYear, gamePublisher, gameRating);
     mediaList.push_back(gamePtr);
+    cout << "Media added!" << endl;
     
   //music
   } else if (strcmp(type, "music") == 0) {
@@ -135,6 +134,7 @@ void addMedia(vector<Media*> &mediaList) {
 
     Music* musicPtr = new Music(musicTitle, musicArtist, musicYear, musicDuration, musicPublisher);
     mediaList.push_back(musicPtr);
+    cout << "Media added!" << endl;
     
   //movie
   } else if (strcmp(type, "movie") == 0) {
@@ -172,7 +172,7 @@ void addMedia(vector<Media*> &mediaList) {
 
     Movie* moviePtr = new Movie(movieTitle, movieDirector, movieYear, movieDuration, movieRating);
     mediaList.push_back(moviePtr);
-       
+    cout << "Media added!" << endl;
   }
   
   
@@ -212,6 +212,7 @@ void deleteMedia(vector<Media*> &mediaList) {
   //variables
   char input[10];
   Media* temp;
+  char response;
   
   cout << "Please enter 'title' to delete by title or 'year' to delete by year: ";
   cin >> input;
@@ -224,9 +225,16 @@ void deleteMedia(vector<Media*> &mediaList) {
     cin.get();
     for (int i = mediaList.size() - 1; i >= 0; i--) {
       if (strcmp(title, mediaList[i]->getTitle()) == 0) {
-        temp = mediaList[i];
-	delete temp;
-	mediaList.erase(mediaList.begin() + i);
+	cout << "Do you want to delete:" << endl;
+	mediaList[i]->display();
+	cout << "Enter 'y' to confirm delete:" << endl;
+	cin >> response;
+	if (response == 'y') {
+	   temp = mediaList[i];
+	   delete temp;
+	   mediaList.erase(mediaList.begin() + i);
+	   break;
+	}
       }
     }
   } else if (strcmp(input, "year") == 0) {
@@ -235,9 +243,17 @@ void deleteMedia(vector<Media*> &mediaList) {
     cin >> year;
     for (int i = mediaList.size() - 1; i >= 0; i--) {
       if (mediaList[i]->getYear() == year) {
-        temp = mediaList[i];
-	delete temp;
-	mediaList.erase(mediaList.begin() + i);
+	cout << "Do you want to delete:" << endl;
+	mediaList[i]->display();
+	cout << "Enter 'y' to confirm delete:" << endl;
+	cin >> response;
+	if (response == 'y') {
+	   temp = mediaList[i];
+	   delete temp;
+	   mediaList.erase(mediaList.begin() + i);
+	   cout << "Media deleted!" << endl;
+	   break;
+	}
       }
     }
   }
