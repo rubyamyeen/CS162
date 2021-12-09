@@ -1,0 +1,21 @@
+//defines room functions
+#include <iostream>
+#include <cstring>
+#include "room.h"
+
+using namespace std;
+
+//constructor
+Room::Room(char* newDescription) {
+  strcpy(description, newDescription);
+}
+
+//destructor
+Room::~Room() {
+  cout << "In the room destructor" << endl;
+}
+
+//get method
+char* Room::getDescription() {
+  return description;
+}

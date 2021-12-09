@@ -1,0 +1,22 @@
+/*This is the main method of the program. Zuul is text-based adventure game. 
+The user will type in commands to move through a maze of rooms, which contain items.
+Author: Ruby Amyeen
+Date: December 8th, 2021
+ */
+
+#include <iostream>
+#include <cstring>
+#include <vector>
+using namespace std;
+
+int main() {
+  char name[20];
+  cout << "Please enter your name: " << endl;
+  cin.get(name, 20);
+  cin.get();
+  cout << "Welcome " << name << "! This is a text-based adventure game..." << endl;
+  cout << "You have 24 hours to make your way to room 1-20. " <<
+    "Remember to bring a cake, it's your enemy's birthday" << endl;
+  cout << "Type 'help' if you lost your way" << endl;
+  return 0;
+}
