@@ -1,6 +1,7 @@
 //defines room functions
 #include <iostream>
 #include <cstring>
+#include <vector>
 #include "room.h"
 
 using namespace std;
@@ -13,4 +14,5 @@ Room::Room(char* newDescription) {
 //get method
 char* Room::getDescription() {
   return description;
+
 }
