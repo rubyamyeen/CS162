@@ -18,6 +18,21 @@ char* Room::getDescription() {
 
 }
 
+bool Room::hasItem(char* secondWord) {
+  for (int i = 0; i < items.size(); i++) {
+    if (strcmp(secondWord, items[i]->getDescription()) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void Room::dropItem(char* secondWord) {
+  Item* newItem = new Item(secondWord);
+  items.push_back(newItem);
+  
+}
+
 void Room::setItem(Item* newItem) {
   items.push_back(newItem);
   //cout << items[0]->getDescription() << endl;
@@ -37,6 +52,18 @@ Room* Room::getExit(char* direction) {
     }
   }
   return ptr;
+}
+
+void Room::displayItems() {
+  if (items.empty()) {
+    cout << "There are no items in this room" << endl;
+  } else {
+    cout << "Items available: ";
+    for (int i = 0; i < items.size(); i++) {
+      cout << items[i]->getDescription() << " ";
+    }
+    cout << endl;
+  }
 }
 
 

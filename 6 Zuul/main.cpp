@@ -17,7 +17,6 @@ void Welcome();
 
 int main() {
   //variables
-
   Room* currentRoom;
   char secondWord[80];
   char* roomDescription = new char[80];
@@ -205,7 +204,9 @@ int main() {
 	Room* nextRoom = currentRoom->getExit(secondWord);
 	if (nextRoom != NULL) {
 	  currentRoom = nextRoom;
-	  cout << "You are in the " << currentRoom->getDescription() << "." << endl;
+	  cout << "You are in the " <<
+	    currentRoom->getDescription() << "." << endl;
+	  currentRoom->displayItems();
 	} else {
 	  cout << "There is nowhere to go..." << endl;
 	}
@@ -214,23 +215,47 @@ int main() {
 	
       //get
       } else if (spaceIndex == 3) {
+	bool hasItem = false;
 	for (int i = 0; i < 5; i++) {
-	  //check if item is in the room
-	  
-	  if(strcmp(secondWord, itemList[i]->getDescription()) == 0) {
+	  if((currentRoom->hasItem(secondWord)) &&
+	   (strcmp(secondWord, itemList[i]->getDescription()) == 0)) {
 	    inventory.push_back(itemList[i]);
+	    cout << "You picked up " << secondWord << endl;
+	    hasItem = true;
+	    break;
 	  }
 	}
-	     
+	if (hasItem == false) {
+	  cout << "Item can't be picked up!" << endl;
+	}
+	
       //drop
       } else if (spaceIndex == 4) {
+	bool dropped = false;
 	for (int i = 0; i < inventory.size(); i++) {
 	  if(strcmp(secondWord, inventory[i]->getDescription()) == 0) {
 	      inventory.erase(inventory.begin() + i);
+	      currentRoom->dropItem(secondWord);
+	      cout << "Item was dropped." << endl;
+	      dropped = true;
+	      break;
 	  }
-	}	  	
+	}
+	if (dropped == false) {
+	  cout << "Invalid command" << endl;
+	}
+	
       }
-    } 
+    }
+     //checkwin
+    if (strcmp("Grand Arts Museum", currentRoom->getDescription()) == 0) {
+      for (int i = 0; i < inventory.size(); i++) {
+	if (strcmp(inventory[i]->getDescription(), "crown of thorns") == 0) {
+	  cout << "You win!" << endl;
+	  stillPlaying = false;
+	}
+      }
+    }
   }
   
   return 0;

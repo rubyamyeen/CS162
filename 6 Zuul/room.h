@@ -24,8 +24,14 @@ class Room {
 
   void setItem(Item *newItem);
 
+  bool hasItem(char* secondWord);
+  
   void setExit(char* direction, Room* nextRoom);
 
+  void dropItem(char* secondWord);
+  
+  void displayItems();
+  
   Room* getExit(char* direction);
   
 };
