@@ -8,30 +8,148 @@ Date: December 8th, 2021
 #include <cstring>
 #include <vector>
 #include "room.h"
+#include "item.h"
 
 using namespace std;
 
 //function prototypes
 void Welcome();
-void createRooms(vector<Room*> &roomList);
-
-//struct for Items
-/*struct Item {
-  char description[20];
-  };*/
 
 int main() {
   //variables
-  char command[20];
+
+  Room* currentRoom;
+  char secondWord[80];
+  char* roomDescription = new char[80];
+  char* itemDescription = new char[80];
+  
   vector<Room*> roomList;
-  //vector<Item*> inventory;
-  const char* commandWords[6] = {"go", "quit", "help", "inventory", "get", "drop"};
+  vector<Item*> inventory;
+  vector<Item*> itemList;
+  
+  const char* commandWords[6] = {"go", "quit", "help",
+    "inventory", "get", "drop"};
+
+  //directions
+  char* north = new char[10];
+  strcpy(north, "north");
+  char* east = new char[10];
+  strcpy(east, "east");
+  char* south = new char[10];
+  strcpy(south, "south");
+  char* west = new char[10];
+  strcpy(west, "west");
+  
+  
+  /*Rooms: (0) museum, (1)hall, (2)weapons, (3)workshop,
+ (4)outside, (5)garden, (6)fountain, (7)library,
+ (8)sparring, (9)meds, (10)courtyard, (11)theator
+ (12)studies, (13)dining, (14)market
+   */
+  const char* roomDescriptionList[15] = {"Grand Arts Museum",
+    "Main Hall", "Weapons Room", "Blacksmith's Workshop",
+    "Outer Palace", "Garden", "Fountain of Youth",
+    "Library", "Sparring Room", "Medical Wing", "Courtyard",
+    "Theatre", "Private Studies", "Dining Hall", "Market"};
+  
+  const char* itemDescriptionList[5] = {"crown of thorns", "javelin",
+    "bronze", "anthology", "scalpel"};
+  
   char input[40];
   int spaceIndex = 0;
   bool hasSpace;
   bool stillPlaying = true;
+
+  //CREATE ROOMS
+  for (int i = 0; i < 15; i++) {
+    strcpy(roomDescription, roomDescriptionList[i]);
+    Room* rPtr = new Room(roomDescription);
+    roomList.push_back(rPtr);
+    //cout << rPtr->getDescription() << endl;
+  }
+
+  //CREATE ITEMS
+  for (int i = 0; i < 5; i++) {
+    strcpy(itemDescription, itemDescriptionList[i]);
+    Item* iPtr = new Item(itemDescription);
+    itemList.push_back(iPtr);
+    //cout << iPtr->getDescription() << endl;
+  }
+  
+  //setting items
+  roomList[10]->setItem(itemList[0]); //crown in courtyard
+  roomList[2]->setItem(itemList[1]); //javelin in weapons
+  roomList[3]->setItem(itemList[2]); //bronze in workshop
+  roomList[7]->setItem(itemList[3]); //anthology in library
+  roomList[9]->setItem(itemList[4]); //scalpel in med wing
   
   Welcome();
+
+  //set exits
+  
+  //outside (4)  
+  roomList[4]->setExit(east, roomList[11]);
+  roomList[4]->setExit(south, roomList[0]);
+  roomList[4]->setExit(west, roomList[3]);
+  roomList[4]->setExit(north, roomList[5]);
+
+  //theatre (11)
+  roomList[11]->setExit(west, roomList[4]);
+  roomList[11]->setExit(south, roomList[7]);
+
+  //library (7)
+  roomList[7]->setExit(north, roomList[11]);
+  roomList[7]->setExit(south, roomList[12]);
+
+  //studies (12)
+  roomList[12]->setExit(north, roomList[7]);
+  roomList[12]->setExit(west, roomList[13]);
+  roomList[12]->setExit(south, roomList[0]);
+
+  //dining (13)
+  roomList[13]->setExit(east, roomList[12]);
+  roomList[13]->setExit(west, roomList[1]);
+  roomList[13]->setExit(south, roomList[9]);
+
+  //museum (0)
+  roomList[0]->setExit(north, roomList[12]);
+  roomList[0]->setExit(west, roomList[9]);
+
+  //main hall(1)
+  roomList[1]->setExit(east, roomList[13]);
+  roomList[1]->setExit(north, roomList[4]);
+
+  //med wing (9)
+  roomList[9]->setExit(north, roomList[13]);
+  roomList[9]->setExit(east, roomList[0]);
+
+  //workshop (3)
+  roomList[3]->setExit(east, roomList[4]);
+  roomList[3]->setExit(north, roomList[14]);
+  roomList[3]->setExit(south, roomList[2]);
+
+  //market (14)
+  roomList[14]->setExit(south, roomList[3]);
+
+  //weapons (2)
+  roomList[2]->setExit(north, roomList[3]);
+  roomList[2]->setExit(west, roomList[8]);
+
+  //sparring room (8)
+  roomList[8]->setExit(east, roomList[2]);
+
+  //garden (5)
+  roomList[5]->setExit(south, roomList[4]);
+  roomList[5]->setExit(east, roomList[10]);
+
+  //courtyard (10)
+  roomList[10]->setExit(west, roomList[5]);
+  roomList[10]->setExit(north, roomList[6]);
+
+  //fountain (6)
+  roomList[6]->setExit(south, roomList[10]);
+  
+  currentRoom = roomList[4];
   
   while (stillPlaying == true) {
     cout << endl;
@@ -43,50 +161,77 @@ int main() {
       if (input[i] == ' ') {
 	spaceIndex = i;
 	hasSpace = true;
-	//cout << "There's a space at index: " << spaceIndex << endl;
+	//set second words to what's after the space
+	strncpy(secondWord, input + (spaceIndex+1), strlen(input) - spaceIndex);
+	break;
       }
     }
 
     //help
     if (strcmp(input, "help") == 0) {
-      cout << "You are lost. You are alone. You wander around the island." << endl;
+      cout << "You are lost. You are alone. "
+	   << "You wander around the island." << endl;
+      cout << "You are in the " << currentRoom->getDescription()
+	   << "." << endl;
       cout << "Your command words are: ";
       for (int i = 0; i < 6; i++) {
 	cout << commandWords[i] << " ";
       }
       cout << endl;
+      //cout << endl;
 
     //inventory
     } else if (strcmp(input, "inventory") == 0) {
-      cout << "You are carrying: " << endl;
-
+      if (inventory.empty()) {
+	cout << "Your inventory is empty!" << endl;
+      } else {
+	cout << "You are carrying: ";
+	for (int i = 0; i < inventory.size(); i++) {
+	  cout << inventory[i]->getDescription() << " ";
+	}
+	cout << endl;
+      }
     //quit
     } else if (strcmp(input, "quit") == 0) {
       stillPlaying = false;
       cout << "Thank you for playing!" << endl;
+      cout << endl;
 
     //action commands
     } else if(hasSpace) {
       
       //go
       if (spaceIndex == 2) {
-	cout << "Where do you want to go?" << endl;
+	Room* nextRoom = currentRoom->getExit(secondWord);
+	if (nextRoom != NULL) {
+	  currentRoom = nextRoom;
+	  cout << "You are in the " << currentRoom->getDescription() << "." << endl;
+	} else {
+	  cout << "There is nowhere to go..." << endl;
+	}
+        
 
+	
       //get
       } else if (spaceIndex == 3) {
-	cout << "What do you want to get?" << endl;
-
+	for (int i = 0; i < 5; i++) {
+	  //check if item is in the room
+	  
+	  if(strcmp(secondWord, itemList[i]->getDescription()) == 0) {
+	    inventory.push_back(itemList[i]);
+	  }
+	}
+	     
       //drop
       } else if (spaceIndex == 4) {
-	cout << "What do you want to drop?" << endl;
+	for (int i = 0; i < inventory.size(); i++) {
+	  if(strcmp(secondWord, inventory[i]->getDescription()) == 0) {
+	      inventory.erase(inventory.begin() + i);
+	  }
+	}	  	
       }
-      
-    }
-    
+    } 
   }
-
-  
-
   
   return 0;
 }
@@ -101,24 +246,10 @@ void Welcome() {
   
   cout << name << ", Arcadia is in great danger." << endl;
   cout << "The crown of thorns is the only way to save this mystical island." << endl;
-  cout << "Meet me at 12 am in the Grand Arts Museum of the Palace with the crown of thorns." << endl;
+  cout << "Meet me at 12 am at the Grand Arts Museum with the crown of thorns." << endl;
   cout << endl;
   
   cout << "Type 'help' if you need help." << endl;
 }
 
-/*creating 15 rooms:(1) Grand Arts Museum,(2) Main Hall,(3) Weapons Room,(4) Blacksmith's Workshop,
-(5) Outside the Palace,(6) Garden,(7) Fountain of Youth,(8) Library,(9) Sparring Room,
-(10) Medical Wing,(11) Courtyard,(12) Theatre, (13) Private Studies,(14) Dining, (15), Market
-*/
-void createRooms(vector<Room*> &roomList) {
-  //trying to create a room instance
-  char* description = new char[20];
-  strcpy(description, "Grand Arts Museum");
-  Room museum(description);
-  cout << museum.getDescription() << endl;
-  roomList.push_back(&museum);
-  cout << roomList[0]->getDescription() << endl;
- 
-}
 
