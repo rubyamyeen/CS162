@@ -27,10 +27,19 @@ bool Room::hasItem(char* secondWord) {
   return false;
 }
 
-void Room::dropItem(char* secondWord) {
+//for the get item command in main
+void Room::removeItem(char* secondWord) {
+  for (int i = 0; i < items.size(); i++) {
+    if(strcmp(secondWord, items[i]->getDescription()) == 0) {
+      items.erase(items.begin() + i);
+    }
+  }
+}
+
+//for the drop item command in main
+void Room::addItem(char* secondWord) {
   Item* newItem = new Item(secondWord);
   items.push_back(newItem);
-  
 }
 
 void Room::setItem(Item* newItem) {
@@ -55,9 +64,7 @@ Room* Room::getExit(char* direction) {
 }
 
 void Room::displayItems() {
-  if (items.empty()) {
-    cout << "There are no items in this room" << endl;
-  } else {
+  if (!items.empty()) {
     cout << "Items available: ";
     for (int i = 0; i < items.size(); i++) {
       cout << items[i]->getDescription() << " ";

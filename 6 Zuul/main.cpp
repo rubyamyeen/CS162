@@ -19,6 +19,7 @@ int main() {
   //variables
   Room* currentRoom;
   char secondWord[80];
+  char firstCommand[10];
   char* roomDescription = new char[80];
   char* itemDescription = new char[80];
   
@@ -88,7 +89,7 @@ int main() {
   
   //outside (4)  
   roomList[4]->setExit(east, roomList[11]);
-  roomList[4]->setExit(south, roomList[0]);
+  roomList[4]->setExit(south, roomList[1]);
   roomList[4]->setExit(west, roomList[3]);
   roomList[4]->setExit(north, roomList[5]);
 
@@ -160,6 +161,8 @@ int main() {
       if (input[i] == ' ') {
 	spaceIndex = i;
 	hasSpace = true;
+	//command word when user inputs two words
+	strncpy(firstCommand, input, spaceIndex);
 	//set second words to what's after the space
 	strncpy(secondWord, input + (spaceIndex+1), strlen(input) - spaceIndex);
 	break;
@@ -219,6 +222,7 @@ int main() {
 	for (int i = 0; i < 5; i++) {
 	  if((currentRoom->hasItem(secondWord)) &&
 	   (strcmp(secondWord, itemList[i]->getDescription()) == 0)) {
+	    currentRoom->removeItem(secondWord);
 	    inventory.push_back(itemList[i]);
 	    cout << "You picked up " << secondWord << endl;
 	    hasItem = true;
@@ -235,14 +239,14 @@ int main() {
 	for (int i = 0; i < inventory.size(); i++) {
 	  if(strcmp(secondWord, inventory[i]->getDescription()) == 0) {
 	      inventory.erase(inventory.begin() + i);
-	      currentRoom->dropItem(secondWord);
+	      currentRoom->addItem(secondWord);
 	      cout << "Item was dropped." << endl;
 	      dropped = true;
 	      break;
 	  }
 	}
 	if (dropped == false) {
-	  cout << "Invalid command" << endl;
+	  cout << "Item could not be dropped!" << endl;
 	}
 	
       }

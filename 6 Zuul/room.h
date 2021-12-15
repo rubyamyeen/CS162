@@ -15,6 +15,7 @@ class Room {
   char description[20];
   vector<Item*> items;
   map<char*, Room*> mapExits;
+  
  public:
   //constructor
   Room(char* newDescription);
@@ -22,16 +23,25 @@ class Room {
   //get method
   char* getDescription();
 
+  //method to set item
   void setItem(Item *newItem);
 
+  //checks if room has certain item
   bool hasItem(char* secondWord);
-  
+
+  //method to set exits
   void setExit(char* direction, Room* nextRoom);
 
-  void dropItem(char* secondWord);
-  
+  //method to add item
+  void addItem(char* secondWord);
+
+  //method to remove item
+  void removeItem(char* secondWord);
+
+  //displays what items are available in room
   void displayItems();
-  
+
+  //gives the exit room for a direction
   Room* getExit(char* direction);
   
 };
