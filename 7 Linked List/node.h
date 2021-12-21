@@ -9,7 +9,19 @@ using namespace std;
 class Node{
   Student* student;
   Node* next;
-		
+public:
+  //get methods
+  Node* getNext();
+  Student* getStudent();
+
+  //set method
+  void setNext(Node* newNext);
+
+  //constructor
+  Node(Student* newStudent);
+
+  //destructor
+  ~Node();		
 };
 
 #endif
