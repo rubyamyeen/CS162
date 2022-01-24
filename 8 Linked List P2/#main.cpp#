@@ -122,5 +122,5 @@ void remove(Node * &head, Node* current, Node* previous, int targetID) {
     delete current;
   } else {
     remove(head, current->getNext(), current, targetID);
-  }
+   }
 }
