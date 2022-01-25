@@ -13,22 +13,24 @@ Date: 12/21/21
 
 using namespace std;
 
-//functions
-//using recursion
+//function prototypes using recursion
 void print(Node* head);
-//using recursion
+void average(Node* head, float sum, float count);
 void remove(Node*&head, Node* current, Node* previous, int targetID);
-//using recursion
-void addR(Node*&head, Node* current, Student* newStudent);
+void add(Node*&head, Node* current, Student* newStudent);
 
 int main(){
+
+  //variables
   Node *head = NULL;
   bool stillRunning = true;
   
   while(stillRunning) {
+    
     char input[20];
-    cout << "Please enter: 'ADD', 'DELETE', 'PRINT', or 'QUIT'" << endl;
+    cout << "Please enter: 'ADD', 'DELETE', 'PRINT', 'AVERAGE', or 'QUIT'" << endl;
     cin >> input;
+    
     //add
     if (strcmp(input, "ADD") == 0) {
       //prompts user for information
@@ -48,9 +50,10 @@ int main(){
       cout << "Enter gpa:" << endl;
       cin >> gpa;
 
+      //creates student pointer
       Student *ptr = new Student(firstname, lastname, id, gpa);
 
-      addR(head, head, ptr);
+      add(head, head, ptr);
 
     //print
     } else if (strcmp(input, "PRINT") == 0) {
@@ -59,7 +62,7 @@ int main(){
     //delete
     } else if (strcmp(input, "DELETE") == 0) {
       if (head == NULL) {
-	cout << "List is empty... there is nothing to delete." << endl;
+	cout << "Empty list!" << endl;
       } else {
 	int id;
 	cout << "Enter student ID to delete:" << endl;
@@ -67,17 +70,23 @@ int main(){
 	remove(head, head, head, id);
       }
       
+    //average
+    } else if (strcmp(input, "AVERAGE") == 0) {
+      if (head == NULL) {
+	cout << "Empty list!" << endl;
+      } else {
+	average(head, 0, 0);
+      }
     //quit
     } else if (strcmp(input, "QUIT") == 0) {
       stillRunning = false;
-      cout << "Leaving student database" << endl;
     }
   }
   
   return 0;
 }
 
-//printing list using recursion
+//method to print list using recursion
 void print(Node *head) {
   if (head != NULL) {
     cout << (head->getStudent())->getfirstname() << " "
@@ -89,11 +98,23 @@ void print(Node *head) {
   }
 }
 
-//inserting to list using recursion
-void addR(Node* &head, Node* current, Student *newStudent) {
+void average(Node* head, float sum, float count) {
+  if (head != NULL) {
+    count++;
+    sum += head->getStudent()->getgpa();
+    average(head->getNext(), sum, count);
+  } else {
+    cout << "Average GPA: " << fixed
+	 << setprecision(2) << (sum / count) << endl;
+  }
+}
+
+//method to add using recursion
+void add(Node* &head, Node* current, Student *newStudent) {
   if (head == NULL) {
     head = new Node(newStudent);
     head->setStudent(newStudent);
+    //if the id number is less than the head (new student has to be head)
   } else if (newStudent->getid() < head->getStudent()->getid()) {
     Node* add = new Node();
     add->setStudent(newStudent);
@@ -101,7 +122,7 @@ void addR(Node* &head, Node* current, Student *newStudent) {
     head = add;
   } else if (current->getNext() != NULL &&
 	     newStudent->getid() > (current->getNext()->getStudent())->getid()){
-    addR(head, current->getNext(), newStudent);
+    add(head, current->getNext(), newStudent);
   } else {
     Node* add = new Node();
     add->setStudent(newStudent);
@@ -110,16 +131,25 @@ void addR(Node* &head, Node* current, Student *newStudent) {
   }
 }
 
-//DOESNT WORK (also using iteration)
+//method to delete using recursion
 void remove(Node * &head, Node* current, Node* previous, int targetID) {
   if (head == NULL) {
+    cout << "Empty list... there's nothing to delete" << endl;
     return;
   } else if (current == NULL) {
     cout << "Student is not in database!" << endl;
+    return;
   } else if (targetID == current->getStudent()->getid()) {
-    //delete
-    previous->setNext(current->getNext());
-    delete current;
+    //delete two cases: deleting the head or any other node
+    //if target id is in head
+    if (targetID == head->getStudent()->getid()) {
+      Node* temp = head;
+      head = head->getNext();
+      temp->~Node();
+    } else {
+      previous->setNext(current->getNext());
+      current->~Node();
+    }
   } else {
     remove(head, current->getNext(), current, targetID);
   }
