@@ -9,13 +9,13 @@ using namespace std;
 BNode::BNode() {
   left = NULL;
   right = NULL;
-  data = '\0';
+  value = '\0';
 }
 
-BNode::BNode(char newData) {
+BNode::BNode(char newValue) {
   left = NULL;
   right = NULL;
-  data = newData;
+  value = newValue;
 }
 
 //destructor
@@ -31,19 +31,19 @@ BNode* BNode::getLeft() {
   return left;
 }
 
-char BNode::getData() {
-  return data;
+char BNode::getValue() {
+  return value;
 }
   
 //setters
-void BNode::setLeft(Node* newLeft) {
+void BNode::setLeft(BNode* newLeft) {
   left = newLeft;
 }
 
-void BNode::setRight(Node* newRight) {
+void BNode::setRight(BNode* newRight) {
   right = newRight;
 }
 
-void BNode::setData(char* newValue) {
-  data = newData;
+void BNode::setValue(char newValue) {
+  value = newValue;
 }

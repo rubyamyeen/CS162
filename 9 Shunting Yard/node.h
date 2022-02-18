@@ -8,24 +8,25 @@
 using namespace std;
 
 class BNode{
+private:
   BNode* left;
   BNode* right;
-  char data;
+  char value;
  public:
   //constructor
   BNode();
-  BNode(char newData);
+  BNode(char newValue);
   ~BNode();
   
   //getters
   BNode* getRight();
   BNode* getLeft();
-  char getData();
+  char getValue();
   
   //setters
   void setLeft(BNode* newLeft);
   void setRight(BNode* newRight);
-  void setData(char newData);
+  void setValue(char newValue);
 };
 
 #endif

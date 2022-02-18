@@ -32,6 +32,34 @@ public:
   }
 };
 
+struct BStackNode {
+  BNode* data;
+  BStackNode* next;
+public:
+  BStackNode() {
+    data = NULL;
+    next = NULL;
+  }
+  BStackNode(BNode* newData) {
+    data = newData;
+    next = NULL;
+  }
+};
+
+
+//stack for building tree
+class BStack {
+  BStackNode *top;
+public:
+   BStack();
+  ~BStack();
+  void push(BNode* newData);
+  void pop();
+  BNode* peek();
+  void display();
+  bool isEmpty();
+};
+
 //stack class
 class Stack {
   Node* top;
@@ -107,30 +135,10 @@ int main() {
       stack->pop(); //deletes left parenthesis
 
     }
-      /*
-    //if operator and it has higher precedence than the top of the stack
-    } else if(isOperator(expression[i])) {
-      while(precedence(expression[i]) < precedence(stack->peek())
-	    || (precedence(expression[i]) == precedence(stack->peek())
-		&& expression[i] != '^')) {
-	queue->enqueue(stack->peek());
-	stack->pop();
-      }
-      stack->push(expression[i]);
-    }
-  
-  
-  
-	      precedence(expression[i]) > precedence(stack->peek())) {
-      stack->push(expression[i]);
-
-    //if operator and it had lower precedence or same as top of stack
-    } else if(isOperator(expression[i]) && precedence(expression[i]) <= precedence(stack->peek())) {
-      while (
-    }
-    */
+     
   }
 
+  //for leftover operations
   while (!stack->isEmpty()) {
       queue->enqueue(stack->peek());
       stack->pop();
@@ -151,30 +159,6 @@ int main() {
   cout << "Expression: " << expression << endl;
   cout << "Notation: " << notation << endl;
 
-  /*creating a stack
-  stack->push('A');
-  stack->push('B');
-  stack->push('C');
-  
-  stack->display();
-  stack->pop(); 
-  cout << endl;
-  stack->display();
-
-  cout << endl;
-  
-  //creating a queue
-  queue->enqueue('A');
-  queue->enqueue('B');
-  queue->enqueue('C');
-
-  queue->display(); 
-  queue->dequeue();
-  cout << endl;
-  queue->display();
-  */
-
-  
   
   return 0;
 }
@@ -301,3 +285,60 @@ int precedence(char operation) {
   }
   return 0;
 }
+
+
+
+
+//BSTACK FUNCTIONS DEFINED (copy and pasted)
+//constructor
+BStack::BStack() {
+  top = NULL;
+}
+
+//deconstructor
+BStack::~BStack() {
+  if (top != NULL) {
+    pop();
+  }
+}
+
+//push function
+void BStack::push(BNode* newData) {
+  BStackNode* temp = new BStackNode(newData);
+  temp->next = top; //old top of the stack
+  top = temp; // new node becomes the top
+}
+
+//pop function
+void BStack::pop() {
+  if (!isEmpty()) {
+    BStackNode* temp = top;
+    top = temp->next;
+    delete temp;
+  } else {
+    exit(1);
+  }
+}
+
+//peek function
+BNode* BStack::peek() {
+  if (!isEmpty()) {
+    return top->data;
+  } else {
+    exit(1);
+  }
+}
+
+//display test
+void BStack::display() {
+  BStackNode* current = top;
+  while (current != NULL) {
+    cout << current->data->getValue() << " ";
+    current = current->next;
+  }
+  cout << endl;
+}
+
+ bool BStack::isEmpty() {
+   return (top == NULL);
+ }
