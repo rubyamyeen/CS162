@@ -16,6 +16,7 @@ private:
   //constructor
   BNode();
   BNode(char newValue);
+  BNode(char newValue, BNode* newLeft, BNode* newRight);
   ~BNode();
   
   //getters

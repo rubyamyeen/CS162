@@ -9,6 +9,8 @@ Date 2/14/22
 
 #include <iostream>
 #include <cstring>
+#include <stdio.h>
+
 #include "node.h"
 
 using namespace std;
@@ -86,6 +88,7 @@ public:
   void enqueue(char operation); //add nodes to rear
   void dequeue(); //removes from front
   void display();
+  char* returnPostfix();
 };
 
 int main() {
@@ -99,7 +102,7 @@ int main() {
   cin.get(expression, 100);
   cin.get();
 
-  //shunting yard (referred to wiki page for algorithm)
+  //SHUNTING YARD ALGORITHM (referred to wiki page for algorithm)
   for (int i = 0; i < strlen(expression); i += 2) { // + 2 to skip space
     
     //if number/variable put into queue
@@ -142,13 +145,30 @@ int main() {
   while (!stack->isEmpty()) {
       queue->enqueue(stack->peek());
       stack->pop();
+
   }
 
+  //CREATING EXPRESSION TREE
+  
+  BStack* bStack = new BStack();
+  BNode* root = new BNode();
+  char* postfix = queue->returnPostfix();
+
+  for (int i = 0; i < strlen(postfix); i++) {
+    if(!isOperator(postfix[i])) {
+      bStack->push(new BNode(postfix[i]));
+    }
+  }
+
+
+  
   cout << endl;
 
   cout << "Postfix: ";
-  queue->display();
+  printf("%s", postfix);
+  //queue->display();
 
+   cout << endl;
   cout << "Infix: " << expression << endl;
 
   
@@ -264,6 +284,20 @@ void Queue::display() {
   cout << endl;
 }
 
+//method to return postfix char*
+char* Queue::returnPostfix() {
+  char* postfix = new char[100];
+  Node* current = front;
+  int x = 0;
+  while (current != NULL) {
+    postfix[x] += current->data;
+    x++;
+    current = current->next;
+  }
+  return postfix;
+}
+
+
 //method to check if character is an operator
  bool isOperator(char character) {
    if (character == '^' || character == '*'
@@ -285,7 +319,6 @@ int precedence(char operation) {
   }
   return 0;
 }
-
 
 
 

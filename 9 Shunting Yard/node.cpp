@@ -18,6 +18,12 @@ BNode::BNode(char newValue) {
   value = newValue;
 }
 
+BNode::BNode(char newValue, BNode* newLeft, BNode* newRight) {
+  left = newLeft;
+  right = newRight;
+  value = newValue;
+}
+
 //destructor
 BNode::~BNode() {
 }
