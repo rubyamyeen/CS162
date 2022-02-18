@@ -1,0 +1,49 @@
+//defines node functions
+#include <iostream>
+#include <cstring>
+#include "node.h"
+
+using namespace std;
+
+//constructors
+Node::Node() {
+  left = NULL;
+  right = NULL;
+  data = '\0';
+}
+
+Node::Node(char newData) {
+  left = NULL;
+  right = NULL;
+  data = newData;
+}
+
+//destructor
+Node::~Node() {
+}
+  
+//getters
+Node* Node::getRight() {
+  return right;
+}
+
+Node* Node::getLeft() {
+  return left;
+}
+
+char Node::getData() {
+  return data;
+}
+  
+//setters
+void Node::setLeft(Node* newLeft) {
+  left = newLeft;
+}
+
+void Node::setRight(Node* newRight) {
+  right = newRight;
+}
+
+void Node::setData(char* newValue) {
+  data = newData;
+}

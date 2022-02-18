@@ -5,10 +5,11 @@ Author: Ruby Amyeen
 Date 2/14/22
 */
 
-//Referenced code from GeeksforGeeks
+//Referenced code from GeeksforGeeks (for stacks and queues)
 
 #include <iostream>
 #include <cstring>
+#include "node.h"
 
 using namespace std;
 
