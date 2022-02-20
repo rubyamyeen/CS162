@@ -18,6 +18,9 @@ using namespace std;
 //function prototypes
 bool isOperator(char character);
 int precedence(char operation);
+void prefix(BNode* root);
+void infix(BNode* root);
+void postfix(BNode* root);
 
 //node struct
 struct Node {
@@ -102,6 +105,7 @@ int main() {
   cin.get(expression, 100);
   cin.get();
 
+  
   //SHUNTING YARD ALGORITHM (referred to wiki page for algorithm)
   for (int i = 0; i < strlen(expression); i += 2) { // + 2 to skip space
     
@@ -147,37 +151,52 @@ int main() {
       stack->pop();
 
   }
-
-  //CREATING EXPRESSION TREE
   
+  //CREATING EXPRESSION TREE (referenced techiedelight)
+  char* postfixFromQ = queue->returnPostfix();
   BStack* bStack = new BStack();
   BNode* root = new BNode();
-  char* postfix = queue->returnPostfix();
 
-  for (int i = 0; i < strlen(postfix); i++) {
-    if(!isOperator(postfix[i])) {
-      bStack->push(new BNode(postfix[i]));
+  for (int i = 0; i < (strlen(postfixFromQ)); i++) {
+    //pop top two nodes to construct a tree with operator as root
+    if (!isOperator(postfixFromQ[i])) {
+      bStack->push(new BNode(postfixFromQ[i]));
+    } else {
+      BNode* right = bStack->peek();
+      bStack->pop();
+
+      BNode* left = bStack->peek();
+      bStack->pop();
+
+      root = new BNode(postfixFromQ[i], left, right);
+      
+      bStack->push(root);      
     }
   }
 
-
-  
-  cout << endl;
-
-  cout << "Postfix: ";
-  printf("%s", postfix);
-  //queue->display();
-
-   cout << endl;
-  cout << "Infix: " << expression << endl;
-
-  
   cout << "Enter the notation ('infix', 'prefix', 'postfix') you'd like to output the expression:" << endl;
   cin.get(notation, 10);
   cin.get();
-  
-  cout << "Expression: " << expression << endl;
-  cout << "Notation: " << notation << endl;
+
+  //prefix
+  if (strcmp(notation, "prefix") == 0) {
+    cout << "Prefix:" << endl;
+    prefix(root);
+    cout << endl;
+    
+  //infix
+  } else if (strcmp(notation, "infix") == 0) {
+    cout << "Infix:" << endl;
+    infix(root);
+    cout << endl;
+    
+  //postfix
+  } else if (strcmp(notation, "postfix") == 0) {
+    cout << "Postfix:" << endl;
+    postfix(root);
+    cout << endl;
+  }
+
 
   
   return 0;
@@ -375,3 +394,49 @@ void BStack::display() {
  bool BStack::isEmpty() {
    return (top == NULL);
  }
+
+
+//Referenced wiki algorithm and techiedelight
+
+//function for prefix
+void prefix(BNode* root) {
+  
+  if (root != NULL) {
+    cout << root->getValue() << " ";
+    prefix(root->getLeft());
+    prefix(root->getRight());
+  }
+  
+}
+
+//function for infix
+void infix(BNode* root) {
+
+  if (root != NULL) {
+    //if operator
+    if (isOperator(root->getValue())) {
+      cout << "(" << " ";
+    }
+
+    infix(root->getLeft());
+    cout << root->getValue() << " ";
+    infix(root->getRight());
+
+    //if operator
+    if (isOperator(root->getValue())) {
+      cout << ")" << " ";
+    }
+  }
+  
+}
+
+//function for postfix
+void postfix(BNode* root) {
+  
+  if (root != NULL) {
+    postfix(root->getLeft());
+    postfix(root->getRight());
+    cout << root->getValue() << " ";
+  }
+  
+}
