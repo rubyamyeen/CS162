@@ -104,7 +104,6 @@ int main() {
   cout << "Enter a mathematical expression:" << endl;
   cin.get(expression, 100);
   cin.get();
-
   
   //SHUNTING YARD ALGORITHM (referred to wiki page for algorithm)
   for (int i = 0; i < strlen(expression); i += 2) { // + 2 to skip space
@@ -115,19 +114,19 @@ int main() {
       queue->enqueue(expression[i]);
 
     //if operator
-    } else if(isOperator(expression[i])) {
+    }else if(isOperator(expression[i])) {
       if (stack->isEmpty() || stack->peek() == '(') {
 	stack->push(expression[i]);
-      } else {
-	while(stack->peek() != '(' && (precedence(expression[i]) < precedence(stack->peek())
-				       || (precedence(expression[i]) == precedence(stack->peek())
-					   && expression[i] != '^'))) {
-	  queue->enqueue(stack->peek());
-	  stack->pop();
-	}
+      } else if (precedence(expression[i]) >= precedence(stack->peek()) && expression[i] == '^') {
 	stack->push(expression[i]);
+      } else {
+      
+	while(!stack->isEmpty() && precedence(expression[i]) <= precedence(stack->peek()) && expression[i] != '^') {
+	 queue->enqueue(stack->peek());
+	 stack->pop();
+       }
+       stack->push(expression[i]);
       }
-  
     //if left parenthesis push to stack
     } else if (expression[i] == '(') {
       stack->push(expression[i]);
@@ -146,14 +145,19 @@ int main() {
   }
 
   //for leftover operations
-  while (!stack->isEmpty()) {
+while (!stack->isEmpty() && stack->peek() != '(') {
       queue->enqueue(stack->peek());
       stack->pop();
-
-  }
+ }
+ 
+//queue->display();
   
   //CREATING EXPRESSION TREE (referenced techiedelight)
+  
   char* postfixFromQ = queue->returnPostfix();
+  //printf("%s", postfixFromQ);
+  //cout << endl;
+  
   BStack* bStack = new BStack();
   BNode* root = new BNode();
 
@@ -335,8 +339,9 @@ int precedence(char operation) {
     return 3;
   } else if (operation == '+' || operation == '-') {
     return 2;
+  } else {
+    return 0;
   }
-  return 0;
 }
 
 
