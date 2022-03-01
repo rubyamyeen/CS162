@@ -1,0 +1,67 @@
+/*
+This is the main method for Hash Table
+Using hash tables to store student data because they are efficient when storing information. The program has an ADD, PRINT, DELETE, and QUIT function
+Author: Ruby Amyeen
+Date: 2/28/22
+*/
+
+#include <iostream>
+#include <cstring>
+#include "student.h"
+
+using namespace std;
+
+//class for hash node
+class HNode {
+  int key;
+  Student* data;
+  HNode* next;
+  
+public: 
+  //constructor
+  HNode(int newKey, int newData) {
+    key = newKey;
+    data = newData;
+    next = NULL;
+  }
+  
+};
+
+//class for hash table
+class HTable {  
+  HNode** hashTable;
+  
+public:  
+  //constructor
+  //creates a hash table with all head pointers set to NULL
+  HTable(int size) {
+    hashTable = new HashNode*[size];
+    for (int i = 0; i < size; i++) {
+      hashTable[i] = NULL;
+    }
+  }
+
+  //desconstructor
+  ~HTable() {
+    for (int i = 0; i < size; i++) {
+      HNode* current = hashTable[i];
+      while (current != NULL) {
+	HNode* previous = current;
+	current = current->next;
+	delete previous;
+      }
+    }
+    delete[] hashTable;
+  }
+
+  //hash function
+  int hash(Student* data, int size) {
+    //add hash function with % (size must be PRIME)
+    
+  }
+  
+}
+
+int main() {
+  HTable studentList;
+}
