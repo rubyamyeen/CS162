@@ -13,14 +13,12 @@ using namespace std;
 
 //class for hash node
 class HNode {
-  int key;
   Student* data;
   HNode* next;
   
 public: 
   //constructor
-  HNode(int newKey, Student* newData) {
-    key = newKey;
+  HNode(Student* newData) {
     data = newData;
     next = NULL;
   }
@@ -29,35 +27,26 @@ public:
   HNode* getNext() {
     return next;
   }
+
+  void setNext(HNode* newNext) {
+    next = newNext;
+  }
   
   
 };
 
-//class for hash table
-class HTable {  
-  HNode** hashTable;
-  //int size;
-  
-public:  
-  //constructor
-  //creates a hash table with all head pointers set to NULL
-  HTable(int size) {
-    //size = newSize;
-    hashTable = new HNode*[size];
-    for (int i = 0; i < size; i++) {
-      hashTable[i] = NULL;
-    }
-  }
-
-  //hash function
-  int hash(Student* data, int size) {
-    //add hash function with % (size must be PRIME)
-    return 0;
-  }
-  
-};
+//hash function returns key
 
 int main() {
   int size = 11;
-  HTable* studentList = new HTable(size);
+  
+  //creating hash table
+  HNode** htable = new HNode*[size];
+
+  //empty table
+  for (int i = 0; i < size; i++) {
+    htable[i] = NULL;
+  }
+  
+  
 }
