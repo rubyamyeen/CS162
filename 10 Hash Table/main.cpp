@@ -7,9 +7,21 @@ Date: 2/28/22
 
 #include <iostream>
 #include <cstring>
-#include "student.h"
+#include <fstream>
 
 using namespace std;
+
+//struct for student
+struct Student {
+  char firstName[20];
+  char lastName[20];
+  int id;
+  float gpa;
+};
+
+//function prototypes
+int hashFunction(Student* data, int size);
+void add(HNode** &htable, int size);
 
 //class for hash node
 class HNode {
@@ -23,13 +35,22 @@ public:
     next = NULL;
   }
 
-  //getter
+  //get next
   HNode* getNext() {
     return next;
   }
 
+  //set next
   void setNext(HNode* newNext) {
     next = newNext;
+  }
+
+  Student* getStudent() {
+    return data;
+  }
+
+  void setData(Student* newData) {
+    data = newData;
   }
   
   
@@ -47,6 +68,44 @@ int main() {
   for (int i = 0; i < size; i++) {
     htable[i] = NULL;
   }
+
+  //add(htable, size);
   
+  //reading in files
+  fstream fin;
+  fin.open("first.txt");
+  for (int i = 0; i < 5; i++) {
+    char* name = new char[50];
+    fin >> name;
+    cout << name << endl;
+  }
+  
+  return 0;
+}
+
+//hash function
+int hashFunction(Student* data, int size) {
+  return data->id % size;
+}
+
+//add function
+void add(HNode** &htable, int size) {
+  
+  Student* student = new Student();
+  cout << "Enter first name:" << endl;
+  cin.get(student->firstName, 20);
+  cin.get();
+    
+  cout << "Enter last name:" << endl;
+  cin.get(student->lastName, 20);
+  cin.get();
+    
+  cout << "Enter student id:" << endl;
+  cin >> student->id;
+    
+  cout << "Enter gpa:" << endl;
+  cin >> student->gpa;
+
+  htable[hashFunction(student, size)] = new HNode(student);
   
 }
