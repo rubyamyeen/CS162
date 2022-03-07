@@ -19,10 +19,6 @@ struct Student {
   float gpa;
 };
 
-//function prototypes
-int hashFunction(Student* data, int size);
-void add(HNode** &htable, int size);
-
 //class for hash node
 class HNode {
   Student* data;
@@ -51,12 +47,14 @@ public:
 
   void setData(Student* newData) {
     data = newData;
-  }
-  
+  }  
   
 };
 
-//hash function returns key
+//function prototypes
+int hashFunction(Student* data, int size);
+void add(HNode** &htable, int size);
+void generate(int number);
 
 int main() {
   int size = 11;
@@ -69,29 +67,22 @@ int main() {
     htable[i] = NULL;
   }
 
-  //add(htable, size);
-  
-  //reading in files
-  fstream fin;
-  fin.open("first.txt");
-  for (int i = 0; i < 5; i++) {
-    char* name = new char[50];
-    fin >> name;
-    cout << name << endl;
-  }
+  generate(5);
+  add(htable, size);
+
   
   return 0;
 }
 
 //hash function
 int hashFunction(Student* data, int size) {
-  return data->id % size;
+  return data->id % size;  
 }
 
 //add function
-void add(HNode** &htable, int size) {
-  
+void add(HNode** &htable, int size) {  
   Student* student = new Student();
+  
   cout << "Enter first name:" << endl;
   cin.get(student->firstName, 20);
   cin.get();
@@ -105,7 +96,24 @@ void add(HNode** &htable, int size) {
     
   cout << "Enter gpa:" << endl;
   cin >> student->gpa;
+  
+  htable[hashFunction(student, size)] = new HNode(student);  
+}
 
-  htable[hashFunction(student, size)] = new HNode(student);
+//generate function
+void generate(int number) {    
+  //reading in files
+  fstream fin;
+  fstream lin;
+  fin.open("first.txt");
+  lin.open("last.txt");
+  
+  for (int i = 0; i < number; i++) {
+    char* firstName = new char[50];
+    char* lastName = new char[50];
+    fin >> firstName;
+    lin >> lastName;
+    cout << firstName << " " << lastName << endl;
+  }
   
 }
