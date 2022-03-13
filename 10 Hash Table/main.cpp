@@ -60,15 +60,16 @@ public:
 
 //function prototypes
 int hashFunction(Student* data, int size);
-void add(HNode* &head, Student* data);
+void add(HNode*& head, Student* data);
+void remove(HNode * &head, HNode* current, HNode* previous, int targetID);
 void print(HNode* head);
 int checkCollision(HNode* head);
-void generate(HNode** &htable, int gen, int &id, int size);
+void generate(HNode**& htable, int gen, int& id, int size);
 
 int main() {
   bool stillRunning = true;
+  int genId;
   int size = 11;
-  int genId = 0;
   //creating hash table
   HNode** htable = new HNode*[size];
 
@@ -109,24 +110,49 @@ int main() {
       add(htable[hashFunction(student, size)], student);
       
       for (int i = 0; i < size; i++) {
-	if (checkCollision(htable[i]) > 3) {
-	  //rehash
-	  cout << "Need to rehash!" << endl;
+	if (htable[i] != NULL) {
+	  if (checkCollision(htable[i]) > 3) {
+	    cout << checkCollision(htable[i]);
+	    //rehash
+	    //create new htable
+	    size *= 2;
+	    HNode** temp = new HNode*[size];
+	    //empty table
+	    for (int i = 0; i < size; i++) {
+	      temp[i] = NULL;
+	    }
+
+	    //go through old table
+	    /*for (int i = 0; i < size/2; i++) {
+	      add(temp[hashFunction(htable[i]->getStudent(), size)], htable[i]->getStudent());
+	      //hash function on old htable nodes with new size
+	      }*/
+	    
+	    cout << size << endl;
+	    cout << "Need to rehash!" << endl;
+	  }
 	  break;
 	}
       }
-      cout << "Student added!" << endl;
+      
+      //cout << "Student added!" << endl;
   
     //print
     } else if (strcmp(input, "PRINT") == 0) {
       for (int i = 0; i < size; i++) {
 	print(htable[i]);
       }
-      cout << "Student database printed!" << endl;
+      //cout << "Student database printed!" << endl;
       
     //delete
     } else if (strcmp(input, "DELETE") == 0) {
-      cout << "Student deleted!" << endl;
+      int targetID = 0;
+      cout << "Enter student ID to delete:" << endl;
+      cin >> targetID;
+      for (int i = 0; i < size; i++) {
+	remove(htable[i], htable[i], htable[i], targetID);
+      }
+      //cout << "Student deleted!" << endl;
       
     //generate
     } else if (strcmp(input, "GENERATE") == 0) {
@@ -134,12 +160,12 @@ int main() {
       cout << "Enter the number of students you'd like to add:" << endl;
       cin >> number;
       generate(htable, number, genId, size);
-      cout << "Students generated!" << endl;
+      //cout << "Students generated!" << endl;
       
     //quit
     } else if (strcmp(input, "QUIT") == 0) {
       stillRunning = false;
-      cout << "Leaving student database" << endl;
+      cout << "Leaving student database..." << endl;
     }
   }
 
@@ -166,22 +192,29 @@ void add(HNode*& head, Student* data) {
 }
 
 //generate function
-void generate(HNode** &htable, int gen, int &id, int size) {    
+void generate(HNode**& htable, int gen, int& id, int size) {
+  srand(time(NULL));
   //reading in files
   fstream fin;
   fstream lin;
   fin.open("first.txt");
   lin.open("last.txt");
-  
+  int random = 0;
   for (int i = 0; i < gen; i++) {
     char* firstName = new char[50];
     char* lastName = new char[50];
-    
-    fin >> firstName;
-    lin >> lastName; 
+    int numOfLines = 0;
+    random = rand() % 50;
+    while(fin >> firstName && lin >> lastName) {
+      numOfLines++;
+      if(numOfLines == random) {
+	cout << firstName << " " << lastName << endl;
+	break;
+      }
+    }
     //cout << firstName << " " << lastName << endl;    
     id++;
-    float gpa = rand() % 5;
+    float gpa = float(rand() % 501)/100;
 
     Student* student = new Student(firstName, lastName, id, gpa);
 
@@ -202,5 +235,35 @@ void print(HNode* head) {
 }
 
 int checkCollision(HNode* head) {
-  return 0;
+  int collisions = 0;
+  HNode* current = head;
+  while (current->getNext() != NULL) {
+    collisions++;
+    current = current->getNext();
+  }
+  return collisions;
+}
+
+
+
+
+void remove(HNode * &head, HNode* current, HNode* previous, int targetID) {
+  if (head == NULL) {
+    return;
+  } else if (current == NULL) {
+    return;
+  } else if (targetID == current->getStudent()->id) {
+    //delete two cases: deleting the head or any other node
+    //if target id is in head
+    if (targetID == head->getStudent()->id) {
+      HNode* temp = head;
+      head = head->getNext();
+      temp->~HNode();
+    } else {
+      previous->setNext(current->getNext());
+      current->~HNode();
+    }
+  } else {
+    remove(head, current->getNext(), current, targetID);
+  }
 }
