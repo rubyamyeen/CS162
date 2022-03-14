@@ -61,7 +61,6 @@ public:
 //function prototypes
 int hashFunction(Student* data, int size);
 void add(HNode*& head, Student* data);
-void rehash(HNode**& htable, HNode* head, int size);
 void remove(HNode*& head, HNode* current, HNode* previous, int targetID);
 void print(HNode* head);
 int checkCollision(HNode* head);
@@ -126,13 +125,19 @@ int main() {
 	    }
 
 	    //go through old table to rehash function the data
+
 	    for (int i = 0; i < size/2; i++) {
-	      rehash(temp, htable[i], size);
+	      HNode* current = htable[i];
+	      while (current != NULL) {
+		add(temp[hashFunction(current->getStudent(), size)], current->getStudent());
+		current = current->getNext();
+	      }
 	      //add(temp[hashFunction(htable[i]->getStudent(), size)], htable[i]->getStudent());
 	      //hash function on old htable nodes with new size
 	    }
 	    //cout << size << endl;
 	    cout << "Rehashed!" << endl;
+	    cout << "Size of the new table: " << size << endl;
 	    
 	    //delete old table
 	    for (int i = 0; i < size/2; i++) {
@@ -198,15 +203,6 @@ void add(HNode*& head, Student* data) {
       current = current->getNext();
     }
     current->setNext(new HNode(data));
-  }
-}
-
-//method to rehash
-void rehash(HNode**& htable, HNode* head, int size) {
-  if (head != NULL) {   
-    //add(temp[hashFunction(htable[i]->getStudent(), size)], htable[i]->getStudent());
-    add(htable[hashFunction(head->getStudent(), size)], head->getStudent());
-    rehash(htable, head->getNext(), size);
   }
 }
 
