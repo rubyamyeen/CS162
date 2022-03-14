@@ -1,6 +1,6 @@
 /*
 This is the main method for Hash Table
-Using hash tables to store student data because they are efficient when storing information. The program has an ADD, PRINT, DELETE, and QUIT function
+Using hash tables to store student data because they are efficient when storing information. The program has an ADD, PRINT, DELETE, GENERATE, and QUIT function
 Author: Ruby Amyeen
 Date: 2/28/22
 */
@@ -61,7 +61,8 @@ public:
 //function prototypes
 int hashFunction(Student* data, int size);
 void add(HNode*& head, Student* data);
-void remove(HNode * &head, HNode* current, HNode* previous, int targetID);
+void rehash(HNode**& htable, HNode* head, int size);
+void remove(HNode*& head, HNode* current, HNode* previous, int targetID);
 void print(HNode* head);
 int checkCollision(HNode* head);
 void generate(HNode**& htable, int gen, int& id, int size);
@@ -69,7 +70,7 @@ void generate(HNode**& htable, int gen, int& id, int size);
 int main() {
   bool stillRunning = true;
   int genId;
-  int size = 11;
+  int size = 101;
   //creating hash table
   HNode** htable = new HNode*[size];
 
@@ -108,30 +109,41 @@ int main() {
       Student* student = new Student(firstname, lastname, id, gpa);
 
       add(htable[hashFunction(student, size)], student);
-      
+
+      //check if need to rehash
       for (int i = 0; i < size; i++) {
 	if (htable[i] != NULL) {
 	  if (checkCollision(htable[i]) > 3) {
-	    cout << checkCollision(htable[i]);
+	    //cout << checkCollision(htable[i]) << endl;
 	    //rehash
 	    //create new htable
 	    size *= 2;
 	    HNode** temp = new HNode*[size];
+	    
 	    //empty table
 	    for (int i = 0; i < size; i++) {
 	      temp[i] = NULL;
 	    }
 
-	    //go through old table
-	    /*for (int i = 0; i < size/2; i++) {
-	      add(temp[hashFunction(htable[i]->getStudent(), size)], htable[i]->getStudent());
+	    //go through old table to rehash function the data
+	    for (int i = 0; i < size/2; i++) {
+	      rehash(temp, htable[i], size);
+	      //add(temp[hashFunction(htable[i]->getStudent(), size)], htable[i]->getStudent());
 	      //hash function on old htable nodes with new size
-	      }*/
+	    }
+	    //cout << size << endl;
+	    cout << "Rehashed!" << endl;
 	    
-	    cout << size << endl;
-	    cout << "Need to rehash!" << endl;
+	    //delete old table
+	    for (int i = 0; i < size/2; i++) {
+	      htable[i]->~HNode();
+	    }
+	    htable = new HNode*[size];
+	    htable = temp;
+	    delete[] temp;
+	    
+	    break;
 	  }
-	  break;
 	}
       }
       
@@ -168,8 +180,6 @@ int main() {
       cout << "Leaving student database..." << endl;
     }
   }
-
-  
   return 0;
 }
 
@@ -191,38 +201,51 @@ void add(HNode*& head, Student* data) {
   }
 }
 
+//method to rehash
+void rehash(HNode**& htable, HNode* head, int size) {
+  if (head != NULL) {   
+    //add(temp[hashFunction(htable[i]->getStudent(), size)], htable[i]->getStudent());
+    add(htable[hashFunction(head->getStudent(), size)], head->getStudent());
+    rehash(htable, head->getNext(), size);
+  }
+}
+
 //generate function
 void generate(HNode**& htable, int gen, int& id, int size) {
   srand(time(NULL));
-  //reading in files
-  fstream fin;
-  fstream lin;
-  fin.open("first.txt");
-  lin.open("last.txt");
   int random = 0;
+  int numOfLines = 1;
+  
   for (int i = 0; i < gen; i++) {
+    //reading in files
+    fstream fin;
+    fstream lin;
+    fin.open("first.txt");
+    lin.open("last.txt");    
     char* firstName = new char[50];
-    char* lastName = new char[50];
-    int numOfLines = 0;
-    random = rand() % 50;
+    char* lastName = new char[50];   
+    numOfLines = 1;
+    random = rand() % 1001;
+
     while(fin >> firstName && lin >> lastName) {
-      numOfLines++;
       if(numOfLines == random) {
-	cout << firstName << " " << lastName << endl;
+	//cout << "Line Number:" << numOfLines << endl;
+	//cout << firstName << " " << lastName << endl;
 	break;
       }
+      ++numOfLines;
     }
-    //cout << firstName << " " << lastName << endl;    
+    //cout << "Name: " << firstName << " " << lastName << endl;
     id++;
     float gpa = float(rand() % 501)/100;
 
     Student* student = new Student(firstName, lastName, id, gpa);
 
     add(htable[hashFunction(student, size)], student);
-  }
-  
+  }  
 }
 
+//method to display
 void print(HNode* head) {
   if (head != NULL) {
     cout << (head->getStudent())->firstname << " "
@@ -234,6 +257,7 @@ void print(HNode* head) {
   }
 }
 
+//method to check collisions
 int checkCollision(HNode* head) {
   int collisions = 0;
   HNode* current = head;
@@ -244,9 +268,7 @@ int checkCollision(HNode* head) {
   return collisions;
 }
 
-
-
-
+//method to delete
 void remove(HNode * &head, HNode* current, HNode* previous, int targetID) {
   if (head == NULL) {
     return;
