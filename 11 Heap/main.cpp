@@ -12,16 +12,18 @@
 using namespace std;
 
 //function prototypes
-void generate(int*& heap);
-void userInput(int*& heap);
+void generate(int*& heap, int& size);
+void userInput(int*& heap, int& size);
 void add(int*& heap, int data, int index);
 void print(int* heap, int size);
-void printOutput(int*& heap, int index);
+void printOutput(int*& heap, int& index, int& size);
+void printTree(int index, int* heap, int depth, int size);
 
 int main() {
+  //variables
   int* heap = new int[100];
+  int heapSize = 0;
   int* output = new int[100];
-  bool stillRunning = true;
 
   //empty heap
   for (int i = 0; i < 100; i++) {
@@ -32,30 +34,33 @@ int main() {
     output[i] = 0;
   }
   
-  while (stillRunning == true) {
-    char input[20];
-    //prompts the user to enter add, print, delete, or quit
-    cout << "Please enter: 'ADD', 'DELETE', "
-	 << "'PRINT', 'GENERATE', or 'QUIT'" << endl;
-    cin >> input;
+  char input[20];
+  //prompts the user to enter add by file or user input
+  cout << "Please enter 'file' to add by file or 'input' to add by user input:" << endl;
+  cin >> input;
 
-    //add
-    if (strcmp(input, "GENERATE") == 0) {
-      generate(heap);
-    } else if (strcmp(input, "ADD") == 0) {
-      userInput(heap);
-    } else if (strcmp(input, "PRINT") == 0) {
-      
-    } else if (strcmp(input, "QUIT") == 0) {
-      stillRunning = false;
-    }
+  if (strcmp(input, "file") == 0) {
+    generate(heap, heapSize);
+    cout << endl;
+  } else if (strcmp(input, "input") == 0) {
+    userInput(heap, heapSize);
+    cout << endl;
   }
-  printOutput(heap, 1);
+  
+  int index = 1;
+  
+  printTree(1, heap, 0, heapSize);
+  cout << endl;
+  
+  cout << "Output: " << endl;
+  printOutput(heap, index, heapSize);
+  cout << endl;
+  
   return 0;
 }
 
-
-void generate(int*& heap) {
+//function to generate
+void generate(int*& heap, int& size) {
   //get file
   char* fileName = new char[20];
   cout << "Enter file name (include .txt)" << endl;
@@ -71,15 +76,16 @@ void generate(int*& heap) {
     add(heap, input, index);
     ++index;
   }
-  int size = index;
-  //cout << size << endl;
+  size = index - 1;
+  //cout << "Size from gen func: " << size << endl;
+  cout << "Heap: " << endl;
   print(heap, size);
   fin.close();
   cout << endl;
-
 }
 
-void userInput(int*& heap) {
+//function to input from user
+void userInput(int*& heap, int& size) {
   char input[10];
   int index = 1;
   while (strcmp(input, "DONE") != 0) {
@@ -90,13 +96,14 @@ void userInput(int*& heap) {
     add(heap, num, index);
     ++index;
   }
-  int size = index - 1;
+  size = index - 2;
   //cout << size << endl;
+  cout << "Heap: " << endl;
   print(heap, size);
   cout << endl;
 }
 
-
+//add function
 void add(int*& heap, int data, int index) {
   int parentIndex = index / 2;
   //add to heap
@@ -112,27 +119,68 @@ void add(int*& heap, int data, int index) {
   }
 }
 
+//print function
 void print(int* heap, int size) {
-  for (int i = 1; i < size; i++) {
+  for (int i = 1; i < size+1; i++) {
     cout << heap[i] << " ";
   }
 }
 
- void printOutput(int*& heap, int index) {
-   int size = sizeof(&heap)/sizeof(int);
-   int max = index;
-  int left = 2 * index;
-  int right = 2 * index + 1;
-  if (left <= size && heap[left] > heap[max]) {
-    max = left;
+//print output function
+void printOutput(int*& heap, int& index, int& size) { 
+  index = 1;
+  int last = size;
+  
+  //print output
+  cout << heap[1] << " ";  
+  int rootData = heap[last];
+  
+  //replace root with last
+  heap[1] = heap[last];
+  heap[last] = 0;  
+  size--;
+  
+  //checks if root needs to be swapped
+  while(heap[index*2] != 0) {
+    if (heap[index] < heap[index*2] || heap[index] < heap[index*2+1]) {
+      if (heap[index*2] > heap[index*2+1]) {
+	//swap root with left
+	int temp = heap[index];
+	heap[index] = heap[index*2];
+	heap[index*2] = temp;
+	index = index*2;
+      } else {
+	//swap root with right
+	int temp = heap[index];
+	heap[index] = heap[index*2+1];
+	heap[index*2+1] = temp;
+	index = index*2+1;
+
+      } 
+    } else {
+      break;
+    }
   }
-  if (right <= size && heap[right] > heap[max]) {
-    max = right;
+
+  //recursion
+  if(size != 0) {
+    printOutput(heap, index, size);
   }
-  if (max != index) {
-    int temp = heap[index];
-    heap[index] = heap[max];
-    heap[max] = temp;
-    printOutput(heap, max);
+  
+}
+
+//print tree function
+void printTree(int index, int* heap, int depth, int size) {
+  //right 
+  if (index*2+1 <= size && heap[index*2+1] != 0) {
+    printTree(index*2+1, heap, depth+1, size);
+  }
+  for(int i = 0; i < depth; i++) {
+    cout << "\t";
+  }
+  cout << heap[index] << endl;
+   //left 
+  if (index*2 <= size && heap[index*2] != 0) {
+    printTree(index*2, heap, depth+1, size);
   }
 }
