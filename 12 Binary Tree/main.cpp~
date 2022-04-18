@@ -1,0 +1,18 @@
+/*
+ *This program is a binary serach tree where each node has a 2 children
+ *and a data value.
+ *The user will enter a list of numbers and they will be correctly
+ *placed in a tree.
+ *Author: Ruby Amyeen
+ *Date: 4/18/22
+ */
+
+#include <iostream>
+#include <cstring>
+#include <fstream>
+
+using namespace std;
+
+int main() {
+  return 0;
+}
