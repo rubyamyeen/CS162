@@ -13,8 +13,11 @@
 #include "bnode.h"
 
 using namespace std;
+
+//function prototypes
 BNode* add(BNode* head, int data);
 BNode* remove(BNode* head, int data);
+BNode* minValueNode(BNode* node);
 int search(BNode* head, int data);
 void printTree(BNode* head, int depth);
 
@@ -108,7 +111,7 @@ int main() {
   return 0;
 }
 
-
+//method to add
 BNode* add(BNode* head, int data) {
   //add node
   if (head == NULL) {
@@ -129,7 +132,7 @@ BNode* add(BNode* head, int data) {
 }
 
 
-//algorithm from geeks for geeks
+// method to print tree (similar to heap)
 void printTree(BNode* head, int depth) {
   //empty: nothing to print!
   if (head == NULL) {
@@ -169,8 +172,23 @@ int search(BNode* head, int data) {
   }
 }
 
+//method to give the min value in a tree (not empty tree)
+BNode* minValueNode(BNode* node) {
+  BNode* current = node;
+  while (current && current->getLeft() != NULL) {
+    //goes to smallest
+    current = current->getLeft();
+  }
+  return current;
+}
+
+//method to remove references from geeks for geeks
 BNode* remove(BNode* head, int data) {
-  //3 cases:
+  //3 cases:  
+  //has one child: swap one of its children
+  //multiple children: go left once and then right as far as you can
+  //root: go left once and then right as far as you can
+
   if (head == NULL) {
     cout << "Not found in list" << endl;
     return head;
@@ -183,10 +201,34 @@ BNode* remove(BNode* head, int data) {
   } else if (head->getValue() < data) {
     head->setRight(remove(head->getRight(), data));
     
-  //at the right value
+  //at the correct node to delete
+  } else {
+    //if node doesn't have any children
+    if (head->getLeft() == NULL && head->getRight() == NULL) {
+      return NULL;
+      
+    //no left child
+    } else if (head->getLeft() == NULL) {
+      BNode* temp = head->getRight();
+      delete head;
+      return temp;
+      
+    //no right child
+    } else if (head->getRight() == NULL) {
+      BNode* temp = head->getLeft();
+      delete head;
+      return temp;
+    }
+    // TWO children
+    //assign to smallest in right subtree
+    BNode* temp = minValueNode(head->getRight());
+    
+    head->setValue(temp->getValue());
+
+    head->setRight(remove(head->getRight(), temp->getValue()));
+    
+    //head->getRight() = remove(head->getRight(), temp->getValue());
+    
   }
   return head;
-  //has one child: swap one of its children
-  //multiple children: go left once and then right as far as you can
-  //root: go left once and then right as far as you can
 }
