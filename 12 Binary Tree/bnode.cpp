@@ -9,16 +9,16 @@ using namespace std;
 BNode::BNode() {
   left = NULL;
   right = NULL;
-  value = '\0';
+  value = -1;
 }
 
-BNode::BNode(char newValue) {
+BNode::BNode(int newValue) {
   left = NULL;
   right = NULL;
   value = newValue;
 }
 
-BNode::BNode(char newValue, BNode* newLeft, BNode* newRight) {
+BNode::BNode(int newValue, BNode* newLeft, BNode* newRight) {
   left = newLeft;
   right = newRight;
   value = newValue;
@@ -37,7 +37,7 @@ BNode* BNode::getLeft() {
   return left;
 }
 
-char BNode::getValue() {
+int BNode::getValue() {
   return value;
 }
   
@@ -50,6 +50,6 @@ void BNode::setRight(BNode* newRight) {
   right = newRight;
 }
 
-void BNode::setValue(char newValue) {
+void BNode::setValue(int newValue) {
   value = newValue;
 }

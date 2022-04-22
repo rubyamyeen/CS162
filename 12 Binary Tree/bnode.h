@@ -11,23 +11,23 @@ class BNode{
 private:
   BNode* left;
   BNode* right;
-  char value;
+  int value;
  public:
   //constructor
   BNode();
-  BNode(char newValue);
-  BNode(char newValue, BNode* newLeft, BNode* newRight);
+  BNode(int newValue);
+  BNode(int newValue, BNode* newLeft, BNode* newRight);
   ~BNode();
   
   //getters
   BNode* getRight();
   BNode* getLeft();
-  char getValue();
+  int getValue();
   
   //setters
   void setLeft(BNode* newLeft);
   void setRight(BNode* newRight);
-  void setValue(char newValue);
+  void setValue(int newValue);
 };
 
 #endif
