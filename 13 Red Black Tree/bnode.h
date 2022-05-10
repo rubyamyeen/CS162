@@ -11,7 +11,10 @@ class BNode{
 private:
   BNode* left;
   BNode* right;
+  BNode* parent;
   int value;
+  int color;
+  
  public:
   //constructor
   BNode();
@@ -22,12 +25,16 @@ private:
   //getters
   BNode* getRight();
   BNode* getLeft();
+  BNode* getParent();
   int getValue();
   
   //setters
   void setLeft(BNode* newLeft);
   void setRight(BNode* newRight);
+  void setParent(BNode* newParent);
   void setValue(int newValue);
+  void setBlack();
+  void setRed();
 };
 
 #endif

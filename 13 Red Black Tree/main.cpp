@@ -1,6 +1,6 @@
 /*
- *This program is a binary serach tree where each node has a 2 children
- *and a data value.
+ *This program is a red black tree, which is a balanced binary search tree.
+ *Nodes are either red or black, root and leaves are black, red nodes have black *children, all paths from a node to null have same number of black nodes
  *The user will enter a list of numbers and they will be correctly
  *placed in a tree.
  *Author: Ruby Amyeen
@@ -18,6 +18,9 @@ using namespace std;
 BNode* add(BNode* root, int data);
 int search(BNode* root, int data);
 void printTree(BNode* root, int depth);
+BNode* grandparent(BNode* current);
+BNode* sibling(BNode* current);
+BNode* uncle(BNode* current);
 
 int main() {
   //create BST root
@@ -89,6 +92,51 @@ int main() {
 
     
   return 0;
+}
+
+//Node Family Members
+//grandparent -> parent of the parent of the current
+BNode* grandparent(BNode* current) {
+  BNode* parent = current->getParent();
+  BNode* grandparent = parent->getParent();
+  if (parent == NULL) {
+    return NULL;
+    
+  } else {
+    return grandparent;
+  }
+} 
+
+//sibling -> left or right of the current
+BNode* sibling(BNode* current) {
+  BNode* parent = current->getParent();
+  if (parent == NULL) {
+    return NULL;
+    
+  } else {
+    //current is left child of parent --> sibling is right
+    if (parent->getLeft() == current) {
+      BNode* sibling = parent->getRight();
+      return sibling;
+    //current is left child of parent --> sibling is left
+    } else if(parent->getRight() == current) {
+      BNode* sibling = parent->getLeft();
+      return sibling;
+    }
+  }
+  return NULL;
+}
+
+//uncle -> sibling of the current's parent
+BNode* uncle(BNode* current) {
+  BNode* parent = current->getParent();
+  // BNode* grandparent = grandparent(current);
+  if (grandparent(current) == NULL) {
+    return NULL;
+    
+  } else {
+    return sibling(parent);
+  }
 }
 
 //method to add
