@@ -27,6 +27,7 @@ private:
   BNode* getLeft();
   BNode* getParent();
   int getValue();
+  int getColor();
   
   //setters
   void setLeft(BNode* newLeft);

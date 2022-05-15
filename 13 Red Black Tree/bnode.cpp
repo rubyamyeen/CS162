@@ -49,6 +49,11 @@ BNode* BNode::getParent() {
 int BNode::getValue() {
   return value;
 }
+
+int BNode::getColor() {
+  return color;
+}
+
   
 //setters
 void BNode::setLeft(BNode* newLeft) {
