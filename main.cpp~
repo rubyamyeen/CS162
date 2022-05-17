@@ -1,0 +1,409 @@
+/*
+ *This program is a red black tree, which is a balanced binary search tree.
+ *Nodes are either red or black, root and leaves are black, red nodes have black *children, all paths from a node to null have same number of black nodes
+ *The user will enter a list of numbers and they will be correctly
+ *placed in a tree.
+ *Colors: 1 is RED and 0 is BLACK 
+ *Author: Ruby Amyeen
+ *Date: 4/18/22
+ */
+
+#include <iostream>
+#include <utility> //for swap
+#include <cstring>
+#include <fstream>
+#include "bnode.h"
+
+using namespace std;
+
+//function prototypes
+BNode* add(BNode* root, BNode* newNode); 
+void insert(BNode* root, BNode* newNode); 
+void fixViolation(BNode* newNode);
+void leftRotate(BNode* Root);
+void rightRotate(BNode* Root);
+//int search(BNode* root, int data);
+void printTree(BNode* root, int depth);
+
+BNode* grandparent(BNode* current);
+BNode* sibling(BNode* current);
+BNode* uncle(BNode* current);
+
+/*class RBT {
+private:
+  BNode* root;
+protected:
+  void 
+  }*/
+
+
+int main() {
+  //create BST root
+  BNode* root = NULL;
+  
+  bool stillRunning = true;
+  
+  char type[10];
+  cout << "Please enter 'FILE' to add by file or 'INPUT' to add by user input:" << endl;
+  cin >> type;
+  if (strcmp(type, "FILE") == 0) {
+    //get file
+    char* fileName = new char[20];
+    cout << "Enter file name (include .txt)" << endl;
+    cin >> fileName;
+    fstream fin;
+    fin.open(fileName);
+
+    int input = 0;
+    while(fin >> input) {
+      //cout << input << " ";
+      //add function
+      BNode* newNode = new BNode(input);
+      root = add(root, newNode);
+    }
+
+    fin.close();
+    
+  } else if (strcmp(type, "INPUT") == 0) {
+    char input[10];
+    while (strcmp(input, "DONE") != 0) {
+      cout << "Enter a number or 'DONE' to print the list:" << endl;
+      cin >> input;
+      if (strcmp(input, "DONE") == 0) {
+	break;
+      }
+      int num = atoi(input);
+      //add
+      BNode* newNode = new BNode(num);
+      root = add(root, newNode);
+    }
+  }
+  
+  while(stillRunning == true) {
+    char input[20];
+    //prompts the user to enter add, print, delete, or quit
+    cout << "Please enter: 'ADD', "
+	 << "'PRINT', or 'QUIT'" << endl;
+    cin >> input;
+
+    //add
+    if (strcmp(input, "ADD") == 0) {
+      int data = 0;
+      cout << "Enter a integer to insert:" << endl;
+      cin >> data;
+      BNode* newNode = new BNode(data);
+      root = add(root, newNode); 
+      
+    //print
+    } else if (strcmp(input, "PRINT") == 0) {
+      //root->setValue(9);
+      //cout << root->getValue() << endl;
+      int depth = 0;
+      printTree(root, depth);
+      
+    //quit
+    } else if (strcmp(input, "QUIT") == 0) {
+      stillRunning = false;
+      
+    }
+  }
+
+    
+  return 0;
+}
+
+//Node Family Members
+//grandparent -> parent of the parent of the current
+BNode* grandparent(BNode* current) {
+  BNode* parent = current->getParent();
+  BNode* grandparent = parent->getParent();
+  if (parent == NULL) {
+    return NULL;
+    
+  } else {
+    return grandparent;
+  }
+} 
+
+//sibling -> left or right of the current
+BNode* sibling(BNode* current) {
+  BNode* parent = current->getParent();
+  if (parent == NULL) {
+    return NULL;
+    
+  }
+    //current is left child of parent --> sibling is right
+    if (parent->getLeft() == current) {
+      BNode* sibling = parent->getRight();
+      return sibling;
+    //current is left child of parent --> sibling is left
+    } else if(parent->getRight() == current) {
+      BNode* sibling = parent->getLeft();
+      return sibling;
+    }
+  return NULL;
+}
+
+//uncle -> sibling of the current's parent
+BNode* uncle(BNode* current) {
+  BNode* parent = current->getParent();
+  // BNode* grandparent = grandparent(current);
+  if (grandparent(current) == NULL) {
+    return NULL;
+    
+  } else {
+    return sibling(parent);
+  }
+}
+//method to go through tree
+void insert(BNode* root, BNode* newNode) {
+  if (root!= NULL) {
+    if (root->getValue() > newNode->getValue()) { //go left
+      if (root->getLeft() != NULL) {
+	insert(root->getLeft(), newNode);
+	return;
+      } else {
+	root->setLeft(newNode);
+      }
+    }
+  } else if (root->getValue() < newNode->getValue()) { //go right
+    if (root->getRight() != NULL) {
+      insert(root->getRight(), newNode);
+      return;
+    } else {
+      root->setRight(newNode);
+    }
+  }
+  newNode->setParent(root);
+
+  /*if (root == NULL) {
+    //root = newNode;
+    return root;
+  }
+  if (root != NULL) {
+    if (root->getValue() > newNode->getValue()) { //go left
+      if (root->getLeft() != NULL) { //recurse left
+	return add(root->getLeft(), newNode);
+      } else {
+	//BNode* add = new BNode(data);
+	root->setLeft(newNode);
+	newNode->setParent(root);
+	return newNode;
+      }
+    } else { //go right
+      if (root->getRight() != NULL) { //recurse right
+	return add(root->getRight(), newNode);
+      } else {
+	//BNode* add = new BNode(data);
+	root->setRight(newNode);
+	newNode->setParent(root);
+	return newNode;
+      }
+    }
+  }
+  return NULL;
+  */
+}
+
+
+//method used in main to add
+BNode* add(BNode* root, BNode* newNode) {
+  //cout << "Insert Recurse" << endl;
+  insert(root, newNode);
+  //cout << "Insert Repair" << endl;
+  fixViolation(newNode);
+	
+	
+	//This portion does not have anything to do with insertion but instead to return the Root of the tree
+	root = newNode;
+	while (root->getParent() != NULL){
+		root = root->getParent();
+	}
+	return root;
+
+}
+
+//Referenced from GeeksForGeeks
+//method fixes violations and maintains RBT properties
+void fixViolation(BNode* newNode) {
+  if (newNode->getParent() == NULL) { //CASE 1: add to the root
+    newNode->setBlack();
+    
+  } else if (newNode->getParent()->getColor() == 0) { //CASE 2: parent is black (good)
+    return;
+    
+  } else if (uncle(newNode) != NULL && uncle(newNode)->getColor() == 1) { //CASE 3: red with red children
+    newNode->getParent()->setBlack();
+    uncle(newNode)->setBlack();
+    grandparent(newNode)->setRed();
+    fixViolation(grandparent(newNode));
+    
+  } else { //CASE 4: parent is smaller or larger than node (rotation needed)
+    BNode* nParent = newNode->getParent(); //new node's grandp
+    BNode* nGrandparent = grandparent(newNode);
+    //smaller parent than child
+    if (newNode == newNode->getParent()->getRight() && newNode->getParent() == grandparent(newNode)->getRight()) {
+      leftRotate(newNode->getParent());
+      newNode = newNode->getLeft();
+    //large parent than child
+    } else if (newNode == newNode->getParent()->getLeft() && newNode->getParent() == grandparent(newNode)->getRight()) {
+      rightRotate(newNode->getParent());
+      newNode = newNode->getRight();
+    }
+    if (newNode == newNode->getParent()->getLeft()) {
+      rightRotate(grandparent(newNode));
+    } else {
+      leftRotate(grandparent(newNode));
+    }
+    newNode->getParent()->setBlack();
+    grandparent(newNode)->setRed();
+    
+  }
+}
+
+
+
+// method to print tree (similar to heap)
+void printTree(BNode* root, int depth) {
+  //empty: nothing to print!
+  if (root == NULL) {
+    return;
+  }
+  
+  //go right
+  if (root->getRight() != NULL) {
+    printTree(root->getRight(), depth+1);
+  }
+  
+  for (int i = 0; i < depth; i++) {
+    cout << "\t ";
+  }
+  
+  if (root->getColor() == 0) { //BLACK
+    cout << root->getValue() << endl;
+  } else if (root->getColor() == 1) { //RED
+    cout << "\033[1;31m" << root->getValue() << " \033[0m" << endl;
+  }
+  
+  //go left
+  if (root->getLeft() != NULL) {
+    printTree(root->getLeft(), depth+1);
+  }
+
+}
+
+//referenced from https://www.youtube.com/watch?v=95s3ndZRGbk
+//method for left rotate
+/*void leftRotate(BNode* root, BNode* x) {
+  BNode* y = x->getRight(); //y points to right of x
+  x->setRight(y->getLeft()); //turning y's left subtree into x's right tree
+  if (y->getLeft() != NULL) {
+    y->getLeft()->setParent(x);
+  }
+  y->setParent(x->getParent()); //link x's parent to y
+
+  //if x at root then y is new root
+  if (x->getParent() == NULL) {
+    root = y;
+  } else if (x == x->getParent()->getLeft()) {  //if x is left child
+    x->getParent()->setLeft(y);
+  } else {
+    x->getParent()->setRight(y);
+  }
+  y->setLeft(x); //left child of y is x
+  x->setParent(y); //y is parent of x
+    
+  }*/
+void leftRotate(BNode* Root){
+	BNode* Right = Root->getRight();
+	BNode* Parent = Root->getParent();
+	Root->setRight(Right->getLeft());
+	Right->setLeft(Root);
+	Root->setParent(Right);
+	if (Root->getRight() != NULL){
+		Root->getRight()->setParent(Root);
+	}
+	if (Parent != NULL){
+		if (Root == Parent->getLeft()){
+			Parent->setLeft(Right);
+		}
+		else if (Root == Parent->getRight()){
+			Parent->setRight(Right);
+		}
+	}
+	Right->setParent(Parent);
+}
+void rightRotate(BNode* Root){
+	BNode* Left = Root->getLeft();
+	BNode* Parent = Root->getParent();
+	Root->setLeft(Left->getRight());
+	Left->setRight(Root);
+	Root->setParent(Left);
+	if (Root->getLeft() != NULL){
+		Root->getLeft()->setParent(Root);
+	}
+	if (Parent != NULL){
+		if (Root == Parent->getLeft()){
+			Parent->setLeft(Left);
+		}
+		else if (Root == Parent->getRight()){
+			Parent->setRight(Left);
+		}
+	}
+	Left->setParent(Parent);
+}
+
+
+
+
+/*void leftRotate(BNode* root, BNode* x) {
+  BNode* y = x->getRight(); //y points to right of x
+  x->setRight(y->getLeft()); //turning y's left subtree into x's right tree
+  if (y->getLeft() != NULL) {
+    y->getLeft()->setParent(x);
+  }
+  y->setParent(x->getParent()); //link x's parent to y
+
+  //if x at root then y is new root
+  if (x->getParent() == NULL) {
+    root = y;
+  } else if (x == x->getParent()->getLeft()) {  //if x is left child
+    x->getParent()->setLeft(y);
+  } else {
+    x->getParent()->setRight(y);
+  }
+  y->setLeft(x); //left child of y is x
+  x->setParent(y); //y is parent of x
+    
+}
+
+
+//method for right rotate
+void rightRotate(BNode* root, BNode* x) {
+  BNode* y = x->getLeft(); //y points to left of x
+  x->setLeft(y->getRight()); //turning y's right subtree into x's left tree
+  if (y->getRight() != NULL) {
+    y->getRight()->setParent(x);
+  }
+  y->setParent(x->getParent()); //link x's parent to y
+
+  //if x at root then y is new root
+  if (x->getParent() == NULL) {
+    root = y;
+  } else if (x == x->getParent()->getLeft()) { //if x is left child
+    x->getParent()->setLeft(y);
+  } else {
+    x->getParent()->setRight(y);
+  }
+  y->setRight(x); //right child of y is x
+  x->setParent(y); //y is parent of x
+  
+}
+
+void swapColors(int colorA, int colorB) {
+  int temp = -1;
+  temp = colorA;
+  colorA = colorB;
+  colorB = temp;
+}
+*/
