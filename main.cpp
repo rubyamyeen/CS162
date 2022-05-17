@@ -93,8 +93,8 @@ int main() {
       cin >> data;
       BNode* newNode = new BNode(data);
       root = add(root, newNode);
-      int depth = 0;
-      printTree(root, depth);
+      //int depth = 0;
+      //printTree(root, depth);
       
     //print
     } else if (strcmp(input, "PRINT") == 0) {
