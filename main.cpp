@@ -166,29 +166,29 @@ void fixViolation(BNode* newNode) {
     fixViolation(grandparent(newNode));
     
   } else { //CASE 4: parent is smaller or larger than node (rotation needed)
-    BNode* nParent = newNode->getParent(); //new node's parent
-    BNode* nGrandparent = grandparent(newNode); //new node's grandparent
-    
-    //smaller parent than child
-    if (newNode == nParent->getRight() && nParent == nGrandparent->getLeft()) {
-      leftRotate(newNode, nParent);
+    BNode* Parent = newNode->getParent(); //new node's parent
+    BNode* Grandparent = grandparent(newNode); //new node's grandparent
+    //parent is smaller than child
+    if (newNode == Parent->getRight() && Parent == Grandparent->getLeft()){
+      leftRotate(newNode, Parent);
       newNode = newNode->getLeft();
-      
-    //large parent than child
-    } else if (newNode == nParent->getLeft() && nParent == nGrandparent->getRight()) {
-      rightRotate(newNode, nParent);
+    }
+    //parent is larger than child
+    else if (newNode == Parent->getLeft() && Parent == Grandparent->getRight()){
+      rightRotate(newNode, Parent);
       newNode = newNode->getRight();
     }
-    if (newNode == nParent->getLeft()) {
-      rightRotate(newNode, nGrandparent);
+
+    Parent = newNode->getParent();
+    Grandparent = grandparent(newNode);
+    if (newNode == Parent->getLeft()){
+      rightRotate(newNode, Grandparent);
     } else {
-      leftRotate(newNode, nGrandparent);
+      leftRotate(newNode, Grandparent);
     }
-    nParent->setBlack();
-    nGrandparent->setRed();
-    
-    }
-   
+    Parent->setBlack();
+    Grandparent->setRed();
+  }
 }
 
 
