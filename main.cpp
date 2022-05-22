@@ -18,11 +18,15 @@ using namespace std;
 
 //function prototypes
 BNode* add(BNode* root, BNode* newNode); 
-void insert(BNode* root, BNode* newNode); 
+void insert(BNode* root, BNode* newNode);
+BNode* remove(BNode* root, int data);
+BNode* removeOneChild(BNode* current);
+void fixTreeDelete(BNode* current, BNode* root);
+BNode* minValueNode(BNode* node);
 void fixViolation(BNode* newNode);
 void leftRotate(BNode* root, BNode* x);
 void rightRotate(BNode* root, BNode* x);
-//int search(BNode* root, int data);
+int search(BNode* root, int data);
 void printTree(BNode* root, int depth);
 
 BNode* grandparent(BNode* current);
@@ -83,7 +87,7 @@ int main() {
     char input[20];
     //prompts the user to enter add, print, delete, or quit
     cout << "Please enter: 'ADD', "
-	 << "'PRINT', or 'QUIT'" << endl;
+	 << "'PRINT', 'SEARCH' or 'DELETE' or 'QUIT'" << endl;
     cin >> input;
 
     //add
@@ -102,16 +106,50 @@ int main() {
       //cout << root->getValue() << endl;
       int depth = 0;
       printTree(root, depth);
+
+    //search
+    } else if (strcmp(input, "SEARCH") == 0) {
+      int data = 0;
+      cout << "Enter a integer to search for:" << endl;
+      cin >> data;
+      if (search(root, data) == data) {
+	cout << "Found!" << endl;
+      } else {
+	cout << "Not in list" << endl;
+      }
+    } else if (strcmp(input, "DELETE") == 0) {
+      //delete
+      int data = 0;
+      cout << "Enter a integer to delete:" << endl;
+      cin >> data;
+      root = remove(root, data);
       
     //quit
     } else if (strcmp(input, "QUIT") == 0) {
       stillRunning = false;
-      
     }
   }
 
     
   return 0;
+}
+
+//references BST wiki 
+int search(BNode* root, int data) {
+  if (root == NULL || root->getValue() == data) {
+    return root->getValue();
+  }
+  if (root->getValue() > data) {
+    if (root->getLeft() == NULL) {
+      return root->getValue();
+    }
+    return search(root->getLeft(), data);
+  } else {
+    if (root->getRight() == NULL) {
+      return root->getValue();
+    }
+    return search(root->getRight(), data);
+  }
 }
 
 //method to go through tree
@@ -172,9 +210,9 @@ void fixViolation(BNode* newNode) {
     if (newNode == Parent->getRight() && Parent == Grandparent->getLeft()){
       leftRotate(newNode, Parent);
       newNode = newNode->getLeft();
-    }
+      
     //parent is larger than child
-    else if (newNode == Parent->getLeft() && Parent == Grandparent->getRight()){
+    } else if (newNode == Parent->getLeft() && Parent == Grandparent->getRight()){
       rightRotate(newNode, Parent);
       newNode = newNode->getRight();
     }
@@ -191,7 +229,64 @@ void fixViolation(BNode* newNode) {
   }
 }
 
+//method to remove references from geeks for geeks
+BNode* remove(BNode* root, int data) {
+  //3 cases:  
+  //has one child: swap one of its children
+  //multiple children: go left once and then right as far as you can
+  //root: go left once and then right as far as you can
 
+  if (root == NULL) {
+    cout << "Not found in list" << endl;
+    return root;
+    
+  // go left
+  } else if (root->getValue() > data) {
+    root->setLeft(remove(root->getLeft(), data));
+
+  // go right
+  } else if (root->getValue() < data) {
+    root->setRight(remove(root->getRight(), data));
+    
+  //at the correct node to delete
+  } else {
+    //if node doesn't have any children
+    if (root->getLeft() == NULL && root->getRight() == NULL) {
+      return NULL;
+      
+    //no left child
+    } else if (root->getLeft() == NULL) {
+      BNode* temp = root->getRight();
+      delete root;
+      return temp;
+      
+    //no right child
+    } else if (root->getRight() == NULL) {
+      BNode* temp = root->getLeft();
+      delete root;
+      return temp;
+    }
+    // TWO children
+    //assign to smallest in right subtree
+    BNode* temp = minValueNode(root->getRight());
+    
+    root->setValue(temp->getValue());
+
+    root->setRight(remove(root->getRight(), temp->getValue()));
+    
+    //head->getRight() = remove(head->getRight(), temp->getValue());
+    
+  }
+  return root;
+}
+
+
+BNode* removeOneChild(BNode* current) {
+  return NULL;
+}
+
+void fixTreeDelete(BNode* current, BNode* root) {
+}
 
 // method to print tree (similar to heap)
 void printTree(BNode* root, int depth) {
@@ -309,4 +404,15 @@ BNode* uncle(BNode* current) {
     
   }
   return sibling(parent);
+}
+
+
+//method to give the min value in a tree (not empty tree)
+BNode* minValueNode(BNode* node) {
+  BNode* current = node;
+  while (current && current->getLeft() != NULL) {
+    //goes to smallest
+    current = current->getLeft();
+  }
+  return current;
 }
