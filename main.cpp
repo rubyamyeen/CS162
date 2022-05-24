@@ -23,7 +23,7 @@ void insert(BNode* root, BNode* newNode);
 void fixViolation(BNode* newNode);
 
 BNode* remove(BNode* root, int data);
-void fixTreeDelete(BNode* current, BNode* root);
+void fixDB(BNode* u, BNode* root);
 BNode* getV(BNode* root, int data);
 BNode* getRoot(BNode* x);
 void replaceNode(BNode* v, BNode* u);
@@ -332,17 +332,59 @@ BNode* remove(BNode* root, int data) {
     v = getV(root, data);
     //if v has one child
     if (v->getLeft() == NULL || v->getRight() == NULL) {
-      //remove one child
+      BNode* u = new BNode();
+      
+      //no left child
+      if (v->getLeft() == NULL) {
+	u = v->getRight();
+	
+      //no right child
+      } else if (v->getRight() == NULL) {
+	u = v->getLeft();
+	
+      //both children null
+      } else {
+	u->setValue(-1);
+	u->setBlack();
+      }
+
+      replaceNode(v, u); //if v and u were red then you don't need to change anything
+      
+      if (v->getColor() == 0) { //black
+	if (u->getColor() == 1) { //red
+	  u->setBlack();
+	} else { //DOUBLE BLACK
+	  //fix double black
+	}
+      } 
+      if (u->getValue() == -1 && u->getParent() == NULL) {
+	return NULL;
+      }
+      BNode* root = getRoot(u);
+      if (u->getValue() == -1) {
+	if (u->getParent()->getLeft() == u) {
+	  u->getParent()->setLeft(NULL);
+	} else {
+	  u->getParent()->setRight(NULL);
+	}
+	delete u;
+      }
+      delete v;
+      return root;
+      
     //two children
     } else {
-      //
+      BNode* u = minValueNode(root->getRight());
+      v->setValue(u->getValue());
+      remove(v->getRight(), u->getValue());
     }
   }
-  return NULL;
+  return getRoot(root);
 }
 
 
-void fixTreeDelete(BNode* current, BNode* root) {
+void fixDB(BNode* u, BNode* root) {
+  //
 }
 
 // method to print tree (similar to heap)
