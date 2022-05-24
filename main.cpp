@@ -4,6 +4,7 @@
  *The user will enter a list of numbers and they will be correctly
  *placed in a tree.
  *Colors: 1 is RED and 0 is BLACK 
+ *v is the node to deleted and u is the child that replaces v
  *Author: Ruby Amyeen
  *Date: 4/18/22
  */
@@ -19,11 +20,16 @@ using namespace std;
 //function prototypes
 BNode* add(BNode* root, BNode* newNode); 
 void insert(BNode* root, BNode* newNode);
-BNode* remove(BNode* root, int data);
-BNode* removeOneChild(BNode* current);
-void fixTreeDelete(BNode* current, BNode* root);
-BNode* minValueNode(BNode* node);
 void fixViolation(BNode* newNode);
+
+BNode* remove(BNode* root, int data);
+void fixTreeDelete(BNode* current, BNode* root);
+BNode* getV(BNode* root, int data);
+BNode* getRoot(BNode* x);
+void replaceNode(BNode* v, BNode* u);
+BNode* removeOneChild(BNode* u);
+
+BNode* minValueNode(BNode* node);
 void leftRotate(BNode* root, BNode* x);
 void rightRotate(BNode* root, BNode* x);
 int search(BNode* root, int data);
@@ -32,13 +38,6 @@ void printTree(BNode* root, int depth);
 BNode* grandparent(BNode* current);
 BNode* sibling(BNode* current);
 BNode* uncle(BNode* current);
-
-/*class RBT {
-private:
-  BNode* root;
-protected:
-  void 
-  }*/
 
 
 int main() {
@@ -190,7 +189,7 @@ BNode* add(BNode* root, BNode* newNode) {
 }
 
 //Referenced from GeeksForGeeks and wiki
-//method fixes violations and maintains RBT properties
+//method fixes violations for INSERT and maintains RBT properties
 void fixViolation(BNode* newNode) {
   if (newNode->getParent() == NULL) { //CASE 1: add to the root
     newNode->setBlack();
@@ -229,6 +228,49 @@ void fixViolation(BNode* newNode) {
   }
 }
 
+//returns v: node to be deleted
+BNode* getV(BNode* root, int data) {
+  BNode* v = root;
+  while (v != NULL) {
+    if (v->getValue() > data) { //go left
+      v = v->getLeft();
+    } else if (v->getValue() < data) { //go right
+      v = v->getRight();
+    } else if (v->getValue() == data) {
+      return v;
+    }
+  }
+  return NULL;
+}
+
+//returns actual root
+BNode* getRoot(BNode* x) {
+  if (x == NULL) {
+    return x;
+    
+  } while (x->getParent() != NULL) {
+    x = x->getParent();
+  }
+  //now at root
+  return x;
+}
+
+//method to replace v (to be deleted) with u (child node)
+void replaceNode(BNode* v, BNode* u) {
+  //reassign parent pointer
+  u->setParent(v->getParent());
+  //v is root
+  if (v->getParent() == NULL) {
+    return;
+  }
+  if (v == v->getParent()->getLeft()) {
+    v->getParent()->setLeft(u);
+  } else {
+    v->getParent()->setRight(u);
+  }
+}
+
+/* 
 //method to remove references from geeks for geeks
 BNode* remove(BNode* root, int data) {
   //3 cases:  
@@ -257,33 +299,48 @@ BNode* remove(BNode* root, int data) {
     //no left child
     } else if (root->getLeft() == NULL) {
       BNode* temp = root->getRight();
+      temp->setParent(root->getParent());
       delete root;
       return temp;
       
     //no right child
     } else if (root->getRight() == NULL) {
       BNode* temp = root->getLeft();
+      temp->setParent(root->getParent());
       delete root;
       return temp;
     }
     // TWO children
     //assign to smallest in right subtree
     BNode* temp = minValueNode(root->getRight());
-    
+    temp->setParent(root->getParent());
     root->setValue(temp->getValue());
 
     root->setRight(remove(root->getRight(), temp->getValue()));
-    
-    //head->getRight() = remove(head->getRight(), temp->getValue());
-    
+        
   }
   return root;
 }
+*/
 
-
-BNode* removeOneChild(BNode* current) {
+BNode* remove(BNode* root, int data) {
+  //not found in list
+  if (getV(root, data) == NULL) {
+    return getRoot(root);
+  } else {
+    BNode* v = new BNode();
+    v = getV(root, data);
+    //if v has one child
+    if (v->getLeft() == NULL || v->getRight() == NULL) {
+      //remove one child
+    //two children
+    } else {
+      //
+    }
+  }
   return NULL;
 }
+
 
 void fixTreeDelete(BNode* current, BNode* root) {
 }
@@ -408,6 +465,7 @@ BNode* uncle(BNode* current) {
 
 
 //method to give the min value in a tree (not empty tree)
+//finding in order successor
 BNode* minValueNode(BNode* node) {
   BNode* current = node;
   while (current && current->getLeft() != NULL) {
