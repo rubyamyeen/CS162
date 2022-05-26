@@ -27,7 +27,6 @@ void fixDB(BNode* u, BNode* root);
 BNode* getV(BNode* root, int data);
 BNode* getRoot(BNode* x);
 void replaceNode(BNode* v, BNode* u);
-BNode* removeOneChild(BNode* u);
 
 BNode* minValueNode(BNode* node);
 void leftRotate(BNode* root, BNode* x);
@@ -270,7 +269,7 @@ void replaceNode(BNode* v, BNode* u) {
   }
 }
 
-/* 
+/*
 //method to remove references from geeks for geeks
 BNode* remove(BNode* root, int data) {
   //3 cases:  
@@ -323,26 +322,28 @@ BNode* remove(BNode* root, int data) {
 }
 */
 
+//method to remove
 BNode* remove(BNode* root, int data) {
   //not found in list
   if (getV(root, data) == NULL) {
-    return getRoot(root);
+    cout << "Not found in list" << endl;
+    return root;
   } else {
     BNode* v = new BNode();
     v = getV(root, data);
-    //if v has one child
+    //if v has one child OR none
     if (v->getLeft() == NULL || v->getRight() == NULL) {
       BNode* u = new BNode();
       
-      //no left child
-      if (v->getLeft() == NULL) {
-	u = v->getRight();
-	
-      //no right child
-      } else if (v->getRight() == NULL) {
+      //has left
+      if (v->getLeft() != NULL) {
 	u = v->getLeft();
 	
-      //both children null
+      //has right
+      } else if (v->getRight() != NULL) {
+	u = v->getRight();
+
+	//no children
       } else {
 	u->setValue(-1);
 	u->setBlack();
@@ -355,11 +356,14 @@ BNode* remove(BNode* root, int data) {
 	  u->setBlack();
 	} else { //DOUBLE BLACK
 	  //fix double black
+	  fixDB(u, getRoot(u));
 	}
-      } 
+      } else {
+      }
       if (u->getValue() == -1 && u->getParent() == NULL) {
 	return NULL;
       }
+      //deleting the node
       BNode* root = getRoot(u);
       if (u->getValue() == -1) {
 	if (u->getParent()->getLeft() == u) {
@@ -374,7 +378,7 @@ BNode* remove(BNode* root, int data) {
       
     //two children
     } else {
-      BNode* u = minValueNode(root->getRight());
+      BNode* u = minValueNode(v->getRight());
       v->setValue(u->getValue());
       remove(v->getRight(), u->getValue());
     }
@@ -382,10 +386,72 @@ BNode* remove(BNode* root, int data) {
   return getRoot(root);
 }
 
-
+//References https://medium.com/analytics-vidhya/deletion-in-red-black-rb-tree-92301e1474ea
 void fixDB(BNode* u, BNode* root) {
-  //
+  if (u->getParent() != NULL) {
+    //CASE 2
+    BNode* s = sibling(u);
+    if (s->getColor() == 1) { //sibling is red 
+      u->getParent()->setRed(); //swap color of parent and sibling
+      s->setBlack();
+      if (u == u->getParent()->getLeft()) { //rotate at parent node left --> db is at left
+	leftRotate(u->getParent(), root);
+	
+      } else if (u == u->getParent()->getRight()) { //rotate at parent node right --> db is at right
+	rightRotate(u->getParent(), root);
+      }
+    }
+    //CASE 3
+    s = sibling(u);
+    if (u->getParent()->getColor() == 0 && s->getColor() == 0
+	&& s->getLeft()->getColor() == 0 && s->getRight()->getColor() == 0) { //sibling is black and sibling's children are black
+      s->setRed(); //sibling red
+      fixDB(u->getParent(), root); //parent is black make it db
+    } else {
+      //CASE 4
+      s = sibling(u);
+      if (u->getParent()->getColor() == 1 && s->getColor() == 0 
+	  && s->getLeft()->getColor() == 0 && s->getRight()->getColor() == 0) { //sibling and children are black but parent is red
+	s->setRed();
+	u->getParent()->setBlack(); //set black
+      } else {
+	s = sibling(u);
+	//CASE 5
+	if (s->getColor() == 0) {
+	  if (u == u->getParent()->getLeft() && s->getRight()->getColor() == 0
+	      && s->getLeft()->getColor() == 1) { //sibling is black, sibling left child (close) is red while right (far) is black
+	    s->setRed(); //swap colors
+	    s->getLeft()->setBlack();
+	    rightRotate(s, root); //rotate opposite direction of db RIGHT
+	  } else if (u == u->getParent()->getRight() && s->getRight()->getColor() == 1
+	      && s->getLeft()->getColor() == 0) { //sibling is black, sibling right child (close) is red while left (far) is black
+	    s->setRed(); //swap colors
+	    s->getRight()->setBlack();
+	    leftRotate(s, root); //rotate opposite direction of db LEFT
+	  }
+	}
+	//CASE 6 after CASE 5
+	s = sibling(u);
+	if (u->getParent()->getColor() == 0) { 
+	  s->setBlack();
+	} else {
+	  s->setRed();
+	}
+	u->getParent()->setBlack();
+	if (u == u->getParent()->getLeft()) {
+	  s->getRight()->setBlack();
+	  leftRotate(u->getParent(), root);
+	} else {
+	  s->getLeft()->setBlack();
+	  rightRotate(u->getParent(), root);
+	}
+      }
+    }
+    return;
+  }
+  return; //CASE 1 -> if double black at root just return the root (to later delete it)
 }
+
 
 // method to print tree (similar to heap)
 void printTree(BNode* root, int depth) {
