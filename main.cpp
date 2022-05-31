@@ -31,13 +31,15 @@ void replaceNode(BNode* v, BNode* u);
 BNode* minValueNode(BNode* node);
 void leftRotate(BNode* root, BNode* x);
 void rightRotate(BNode* root, BNode* x);
+
 int search(BNode* root, int data);
 void printTree(BNode* root, int depth);
 
 BNode* grandparent(BNode* current);
 BNode* sibling(BNode* current);
 BNode* uncle(BNode* current);
-
+bool black(BNode* current);
+bool red(BNode* current);
 
 int main() {
   //create BST root
@@ -152,7 +154,6 @@ int search(BNode* root, int data) {
 
 //method to go through tree
 void insert(BNode* root, BNode* newNode) {
-
   if (root!= NULL) {
     if (root->getValue() > newNode->getValue()) { //go left
       if (root->getLeft() != NULL) {
@@ -269,65 +270,13 @@ void replaceNode(BNode* v, BNode* u) {
   }
 }
 
-/*
-//method to remove references from geeks for geeks
-BNode* remove(BNode* root, int data) {
-  //3 cases:  
-  //has one child: swap one of its children
-  //multiple children: go left once and then right as far as you can
-  //root: go left once and then right as far as you can
-
-  if (root == NULL) {
-    cout << "Not found in list" << endl;
-    return root;
-    
-  // go left
-  } else if (root->getValue() > data) {
-    root->setLeft(remove(root->getLeft(), data));
-
-  // go right
-  } else if (root->getValue() < data) {
-    root->setRight(remove(root->getRight(), data));
-    
-  //at the correct node to delete
-  } else {
-    //if node doesn't have any children
-    if (root->getLeft() == NULL && root->getRight() == NULL) {
-      return NULL;
-      
-    //no left child
-    } else if (root->getLeft() == NULL) {
-      BNode* temp = root->getRight();
-      temp->setParent(root->getParent());
-      delete root;
-      return temp;
-      
-    //no right child
-    } else if (root->getRight() == NULL) {
-      BNode* temp = root->getLeft();
-      temp->setParent(root->getParent());
-      delete root;
-      return temp;
-    }
-    // TWO children
-    //assign to smallest in right subtree
-    BNode* temp = minValueNode(root->getRight());
-    temp->setParent(root->getParent());
-    root->setValue(temp->getValue());
-
-    root->setRight(remove(root->getRight(), temp->getValue()));
-        
-  }
-  return root;
-}
-*/
 
 //method to remove
 BNode* remove(BNode* root, int data) {
   //not found in list
   if (getV(root, data) == NULL) {
     cout << "Not found in list" << endl;
-    return root;
+    return getRoot(root);
   } else {
     BNode* v = new BNode();
     v = getV(root, data);
@@ -351,15 +300,15 @@ BNode* remove(BNode* root, int data) {
 
       replaceNode(v, u); //if v and u were red then you don't need to change anything
       
-      if (v->getColor() == 0) { //black
-	if (u->getColor() == 1) { //red
+      if (black(v)) { //black
+	if (red(u)) { //red
 	  u->setBlack();
 	} else { //DOUBLE BLACK
 	  //fix double black
 	  fixDB(u, getRoot(u));
 	}
-      } else {
       }
+      
       if (u->getValue() == -1 && u->getParent() == NULL) {
 	return NULL;
       }
@@ -378,53 +327,60 @@ BNode* remove(BNode* root, int data) {
       
     //two children
     } else {
-      BNode* u = minValueNode(v->getRight());
-      v->setValue(u->getValue());
-      remove(v->getRight(), u->getValue());
+      BNode* uNode = minValueNode(v->getRight());
+      v->setValue(uNode->getValue());
+      remove(v->getRight(), uNode->getValue());
     }
   }
   return getRoot(root);
 }
 
+
 //References https://medium.com/analytics-vidhya/deletion-in-red-black-rb-tree-92301e1474ea
 void fixDB(BNode* u, BNode* root) {
+  
   if (u->getParent() != NULL) {
+    
     //CASE 2
     BNode* s = sibling(u);
-    if (s->getColor() == 1) { //sibling is red 
+    if (red(s)) { //sibling is red 
       u->getParent()->setRed(); //swap color of parent and sibling
       s->setBlack();
       if (u == u->getParent()->getLeft()) { //rotate at parent node left --> db is at left
 	leftRotate(u->getParent(), root);
-	
       } else if (u == u->getParent()->getRight()) { //rotate at parent node right --> db is at right
 	rightRotate(u->getParent(), root);
       }
+      
     }
+    
     //CASE 3
     s = sibling(u);
-    if (u->getParent()->getColor() == 0 && s->getColor() == 0
-	&& s->getLeft()->getColor() == 0 && s->getRight()->getColor() == 0) { //sibling is black and sibling's children are black
+    if (black(u->getParent()) && black(s)
+	&& black(s->getLeft()) && black(s->getRight())) { //sibling is black and sibling's children are black
       s->setRed(); //sibling red
       fixDB(u->getParent(), root); //parent is black make it db
     } else {
+      
       //CASE 4
       s = sibling(u);
-      if (u->getParent()->getColor() == 1 && s->getColor() == 0 
-	  && s->getLeft()->getColor() == 0 && s->getRight()->getColor() == 0) { //sibling and children are black but parent is red
+      if (red(u->getParent()) && black(s)
+	  && black(s->getLeft()) && black(s->getRight())) { //sibling and children are black but parent is red
 	s->setRed();
 	u->getParent()->setBlack(); //set black
+	
       } else {
 	s = sibling(u);
 	//CASE 5
-	if (s->getColor() == 0) {
-	  if (u == u->getParent()->getLeft() && s->getRight()->getColor() == 0
-	      && s->getLeft()->getColor() == 1) { //sibling is black, sibling left child (close) is red while right (far) is black
+	if (black(s)) {
+	  if (u == u->getParent()->getLeft() && black(s->getRight())
+	      && red(s->getLeft())) { //sibling is black, sibling left child (close) is red while right (far) is black
 	    s->setRed(); //swap colors
 	    s->getLeft()->setBlack();
 	    rightRotate(s, root); //rotate opposite direction of db RIGHT
-	  } else if (u == u->getParent()->getRight() && s->getRight()->getColor() == 1
-	      && s->getLeft()->getColor() == 0) { //sibling is black, sibling right child (close) is red while left (far) is black
+	  } else if (u == u->getParent()->getRight() && red(s->getRight())
+		     && black(s->getLeft())) { //sibling is black, sibling right child (close) is red while left (far) is black
+
 	    s->setRed(); //swap colors
 	    s->getRight()->setBlack();
 	    leftRotate(s, root); //rotate opposite direction of db LEFT
@@ -432,12 +388,15 @@ void fixDB(BNode* u, BNode* root) {
 	}
 	//CASE 6 after CASE 5
 	s = sibling(u);
-	if (u->getParent()->getColor() == 0) { 
+	//cout << "Case 6" << endl;
+
+	if (black(u->getParent())) { 
 	  s->setBlack();
 	} else {
 	  s->setRed();
 	}
 	u->getParent()->setBlack();
+	
 	if (u == u->getParent()->getLeft()) {
 	  s->getRight()->setBlack();
 	  leftRotate(u->getParent(), root);
@@ -447,6 +406,7 @@ void fixDB(BNode* u, BNode* root) {
 	}
       }
     }
+    
     return;
   }
   return; //CASE 1 -> if double black at root just return the root (to later delete it)
@@ -470,9 +430,11 @@ void printTree(BNode* root, int depth) {
   }
   
   if (root->getColor() == 0) { //BLACK
-    cout << root->getValue() << endl;
+    cout << root->getValue()  << endl;
+    //cout << root->getValue() << " P: " << root->getParent()->getValue() << endl;
   } else if (root->getColor() == 1) { //RED
     cout << "\033[1;31m" << root->getValue() << " \033[0m" << endl;
+    //cout << "\033[1;31m" << root->getValue() <<  " P: " << root->getParent()->getValue() << " \033[0m" << endl;
   }
   
   //go left
@@ -527,18 +489,17 @@ void rightRotate(BNode* root, BNode* x) {
   y->setRight(x); //right child of y is x
   x->setParent(y); //y is parent of x
   
-}
+  }
 
 //Node Family Members
 //grandparent -> parent of the parent of the current
 BNode* grandparent(BNode* current) {
   BNode* parent = current->getParent();
-  BNode* Grandparent = parent->getParent();
   if (parent == NULL) {
     return NULL;
     
   } else {
-    return Grandparent;
+    return parent->getParent();;
   }
 } 
 
@@ -549,34 +510,60 @@ BNode* sibling(BNode* current) {
     return NULL;
     
   }
-    //current is left child of parent --> sibling is right
-    if (parent->getLeft() == current) {
-      BNode* sibling = parent->getRight();
-      return sibling;
-    //current is left child of parent --> sibling is left
-    } else if(parent->getRight() == current) {
-      BNode* sibling = parent->getLeft();
-      return sibling;
-    }
+  //current is left child of parent --> sibling is right
+  if (parent->getLeft() == current) {
+    return parent->getRight();
+    
+  //current is left child of parent --> sibling is left
+  } else if(parent->getRight() == current) {
+    return parent->getLeft();
+  }
+  
   return NULL;
 }
 
 //uncle -> sibling of the current's parent
 BNode* uncle(BNode* current) {
-  BNode* parent = current->getParent();
-  if (grandparent(current) == NULL) {
+  BNode* Parent = current->getParent();
+  BNode* Grandparent = grandparent(current);
+  if (Grandparent == NULL) {
     return NULL;
     
   }
-  return sibling(parent);
+  return sibling(Parent);
+}
+//have to check for LEAF NODE too
+bool black(BNode* current) {
+  if (current == NULL) {
+    return true;
+  }
+  
+  if (current->getColor() == 0) {
+    return true;    
+  } else {
+    return false;
+  }
+  
 }
 
+
+bool red(BNode* current) {
+  if (current == NULL) {
+    return false;
+  }
+  
+  if (current->getColor() == 1) {
+    return true;    
+  } else {
+    return false;
+  }
+}
 
 //method to give the min value in a tree (not empty tree)
 //finding in order successor
 BNode* minValueNode(BNode* node) {
   BNode* current = node;
-  while (current && current->getLeft() != NULL) {
+  while (current->getLeft() != NULL) {
     //goes to smallest
     current = current->getLeft();
   }

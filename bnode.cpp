@@ -10,8 +10,8 @@ BNode::BNode() {
   left = NULL;
   right = NULL;
   parent = NULL;
-  color = 1; //red 
-  value = -1;
+  color = 1; //red
+  value = -2;
   
 }
 
@@ -53,7 +53,6 @@ int BNode::getValue() {
 int BNode::getColor() {
   return color;
 }
-
   
 //setters
 void BNode::setLeft(BNode* newLeft) {
