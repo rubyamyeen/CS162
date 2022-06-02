@@ -34,6 +34,7 @@ void rightRotate(BNode* root, BNode* x);
 
 int search(BNode* root, int data);
 void printTree(BNode* root, int depth);
+void print(char prefix[], BNode* Root, bool isLeft);
 
 BNode* grandparent(BNode* current);
 BNode* sibling(BNode* current);
@@ -106,7 +107,7 @@ int main() {
       //cout << root->getValue() << endl;
       int depth = 0;
       printTree(root, depth);
-
+    
     //search
     } else if (strcmp(input, "SEARCH") == 0) {
       int data = 0;
@@ -282,6 +283,7 @@ BNode* remove(BNode* root, int data) {
     v = getV(root, data);
     //if v has one child OR none
     if (v->getLeft() == NULL || v->getRight() == NULL) {
+      // cout << "deleting " << v->getValue() << endl;
       BNode* u = new BNode();
       
       //has left
@@ -326,6 +328,7 @@ BNode* remove(BNode* root, int data) {
       return root;
       
     //two children
+  
     } else {
       BNode* uNode = minValueNode(v->getRight());
       v->setValue(uNode->getValue());
@@ -343,13 +346,13 @@ void fixDB(BNode* u, BNode* root) {
     
     //CASE 2
     BNode* s = sibling(u);
-    if (red(s)) { //sibling is red 
+    if (red(s)) { //sibling is red
       u->getParent()->setRed(); //swap color of parent and sibling
       s->setBlack();
       if (u == u->getParent()->getLeft()) { //rotate at parent node left --> db is at left
-	leftRotate(u->getParent(), root);
+	leftRotate(root, u->getParent());
       } else if (u == u->getParent()->getRight()) { //rotate at parent node right --> db is at right
-	rightRotate(u->getParent(), root);
+	rightRotate(root, u->getParent());
       }
       
     }
@@ -377,19 +380,16 @@ void fixDB(BNode* u, BNode* root) {
 	      && red(s->getLeft())) { //sibling is black, sibling left child (close) is red while right (far) is black
 	    s->setRed(); //swap colors
 	    s->getLeft()->setBlack();
-	    rightRotate(s, root); //rotate opposite direction of db RIGHT
+	    rightRotate(root, s); //rotate opposite direction of db RIGHT
 	  } else if (u == u->getParent()->getRight() && red(s->getRight())
 		     && black(s->getLeft())) { //sibling is black, sibling right child (close) is red while left (far) is black
-
 	    s->setRed(); //swap colors
 	    s->getRight()->setBlack();
-	    leftRotate(s, root); //rotate opposite direction of db LEFT
+	    leftRotate(root, s); //rotate opposite direction of db LEFT
 	  }
 	}
 	//CASE 6 after CASE 5
 	s = sibling(u);
-	//cout << "Case 6" << endl;
-
 	if (black(u->getParent())) { 
 	  s->setBlack();
 	} else {
@@ -399,10 +399,10 @@ void fixDB(BNode* u, BNode* root) {
 	
 	if (u == u->getParent()->getLeft()) {
 	  s->getRight()->setBlack();
-	  leftRotate(u->getParent(), root);
+	  leftRotate(root, u->getParent());
 	} else {
 	  s->getLeft()->setBlack();
-	  rightRotate(u->getParent(), root);
+	  rightRotate(root, u->getParent());
 	}
       }
     }
@@ -563,7 +563,7 @@ bool red(BNode* current) {
 //finding in order successor
 BNode* minValueNode(BNode* node) {
   BNode* current = node;
-  while (current->getLeft() != NULL) {
+  while (current && current->getLeft() != NULL) {
     //goes to smallest
     current = current->getLeft();
   }
