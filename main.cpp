@@ -34,7 +34,6 @@ void rightRotate(BNode* root, BNode* x);
 
 int search(BNode* root, int data);
 void printTree(BNode* root, int depth);
-void print(char prefix[], BNode* Root, bool isLeft);
 
 BNode* grandparent(BNode* current);
 BNode* sibling(BNode* current);
